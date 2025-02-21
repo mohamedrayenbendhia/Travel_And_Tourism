@@ -1,0 +1,24 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+Restaurant:
+    path: /restaurant
+    controller: App\Controller\RestaurantController::index
+Category:
+    path: /category
+    controller: App\Controller\CategoryController::index
+Commande:
+    path: /commande
+    controller: App\Controller\CommandeController::index
+transport:
+    path: /transport
+    controller: App\Controller\TransportController::index
+Menu:
+    path: /menu
+    controller: App\Controller\MenuController::index
+ReservationTransport:
+    path: /reservationtransport
+    controller: App\Controller\ReservationTransportController::index
+

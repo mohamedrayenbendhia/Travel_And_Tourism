@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Transport{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">Edit Transport</h1>
+<div class="mb-3">
+    {{ include('transport/_form.html.twig', {'button_label': 'Update'}) }}
+</div>
+    <a href="{{ path('app_transport_index') }}" class="btn btn-secondary">back to list</a>
+
+    {{ include('transport/_delete_form.html.twig') }}
+{% endblock %}

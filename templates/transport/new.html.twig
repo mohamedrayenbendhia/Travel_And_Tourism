@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Transport{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4">Create new Transport</h1>
+<div class="mb-3">
+    {{ include('transport/_form.html.twig') }}
+</div>
+    <a href="{{ path('app_transport_index') }}" class="btn btn-secondary">back to list</a>
+</div>
+{% endblock %}
