@@ -1,13 +1,24 @@
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Edit Restaurant{% endblock %}
 
 {% block body %}
-    <h1 class="mb-4">Edit Restaurant</h1>
-<div class="mb-3">
-    {{ include('restaurant/_form.html.twig', {'button_label': 'Update'}) }}
-</div>
-    <a href="{{ path('app_restaurant_index') }}" class="btn btn-secondary">back to list</a>
+<div class="container">
+    <h1>Edit Restaurant</h1>
 
-    {{ include('restaurant/_delete_form.html.twig') }}
+    {# Form Container #}
+    <div class="form-container">
+        {# Include the form template #}
+        {{ include('restaurant/_form.html.twig', {'button_label': 'Update'}) }}
+    </div>
+
+    {# Back to List Link #}
+    <a href="{{ path('app_restaurant_index') }}" class="btn btn-secondary">Back to List</a>
+
+    {# Delete Form #}
+    <div class="delete-form mt-3">
+        {{ include('restaurant/_delete_form.html.twig') }}
+    </div>
+</div>
 {% endblock %}

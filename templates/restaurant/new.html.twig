@@ -2,13 +2,99 @@
 
 {% block title %}New Restaurant{% endblock %}
 
-{% block body %}
-<div class="container mt-5">
-    <h1 class="mb-4">Create new Restaurant</h1>
-    <div class="mb-3">
+{% block stylesheets %}
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 0;
+            padding: 20px;
+        }
 
-    {{ include('restaurant/_form.html.twig') }}
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            display: block;
+            text-align: center;
+            background-color: #6c757d;
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Create New Restaurant</h1>
+
+    <div class="form-container">
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+            {{ form_row(form.nom) }}
+            {{ form_row(form.localisation) }}
+            {{ form_row(form.menu) }}
+            {{ form_row(form.imageFile) }}
+
+            <button class="btn btn-primary">Save</button>
+        {{ form_end(form) }}
     </div>
-    <a href="{{ path('app_restaurant_index') }}" class="btn btn-secondary">back to list</a>
+
+    <a href="{{ path('app_restaurant_index') }}" class="btn-secondary">Back to List</a>
 </div>
 {% endblock %}
+

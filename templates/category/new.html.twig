@@ -2,15 +2,93 @@
 
 {% block title %}New Category{% endblock %}
 
+{% block stylesheets %}
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            background: #ffffff;
+            padding: 20px;
+            margin: 50px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            display: block;
+            text-align: center;
+            background-color: #6c757d;
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <div class="container mt-5">
+    <div class="container">
+        <h1>Create New Category</h1>
 
-    <h1 class="mb-4">Create new Category</h1>
-    <div class="mb-3">
+        <div class="form-container">
+            {{ include('category/_form.html.twig') }}
+        </div>
 
-    {{ include('category/_form.html.twig') }}
-    </div>
-
-    <a href="{{ path('app_category_index') }}" class="btn btn-secondary">back to list</a>
+        <a href="{{ path('app_category_index') }}" class="btn-secondary">Back to List</a>
     </div>
 {% endblock %}

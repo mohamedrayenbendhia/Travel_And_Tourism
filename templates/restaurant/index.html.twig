@@ -21,6 +21,15 @@
                 <td>{{ restaurant.id }}</td>
                 <td>{{ restaurant.nom }}</td>
                 <td>{{ restaurant.localisation }}</td>
+                  <td>
+                        {% if restaurant.image %}
+                            <img src="{{ asset('uploads/restaurants/' ~ restaurant.image) }}" 
+                                 alt="{{ restaurant.nom }}" width=40 class="img-thumbnail">
+                        {% else %}
+                            No image available
+                        {% endif %}
+                    </td>
+                </tr>
                 <td>
                     <a href="{{ path('app_restaurant_show', {'id': restaurant.id}) }}" class="btn btn-primary btn-sm">show</a>
                     <a href="{{ path('app_restaurant_edit', {'id': restaurant.id}) }}" class="btn btn-warning btn-sm">edit</a>
