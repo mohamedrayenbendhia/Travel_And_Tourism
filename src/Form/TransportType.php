@@ -13,7 +13,7 @@ class TransportType extends AbstractType
     {
         $builder
             ->add('type')
-            ->add('desription')
+            ->add('description')
             ->add('prix')
             ->add('disponibilte')
         ;

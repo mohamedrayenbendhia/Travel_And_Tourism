@@ -17,7 +17,7 @@ class Transport
     private ?string $type = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $desription = null;
+    private ?string $description = null;
 
     #[ORM\Column]
     private ?float $prix = null;
@@ -42,14 +42,14 @@ class Transport
         return $this;
     }
 
-    public function getDesription(): ?string
+    public function getDescription(): ?string
     {
-        return $this->desription;
+        return $this->description;
     }
 
-    public function setDesription(string $desription): static
+    public function setDescription(string $description): static
     {
-        $this->desription = $desription;
+        $this->description = $description;
 
         return $this;
     }
