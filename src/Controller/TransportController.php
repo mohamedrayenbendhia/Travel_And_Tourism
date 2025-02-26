@@ -15,10 +15,13 @@ use Symfony\Component\Routing\Attribute\Route;
 final class TransportController extends AbstractController
 {
     #[Route(name: 'app_transport_index', methods: ['GET'])]
-    public function index(TransportRepository $transportRepository): Response
+    public function index(TransportRepository $transportRepository, Request $request): Response
     {
+        $isAdmin = $request->query->has('a');
+
         return $this->render('transport/index.html.twig', [
             'transports' => $transportRepository->findAll(),
+            'isAdmin' => $isAdmin,
         ]);
     }
 

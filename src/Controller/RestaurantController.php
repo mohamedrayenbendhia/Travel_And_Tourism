@@ -17,10 +17,13 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 final class RestaurantController extends AbstractController
 {
     #[Route(name: 'app_restaurant_index', methods: ['GET'])]
-    public function index(RestaurantRepository $restaurantRepository): Response
+    public function index(RestaurantRepository $restaurantRepository, Request $request): Response
     {
+        $isAdmin = $request->query->has('a');
+        
         return $this->render('restaurant/index.html.twig', [
             'restaurants' => $restaurantRepository->findAll(),
+            'isAdmin' => $isAdmin,
         ]);
     }
 

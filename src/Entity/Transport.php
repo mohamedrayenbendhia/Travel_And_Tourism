@@ -25,6 +25,9 @@ class Transport
     #[ORM\Column]
     private ?bool $disponibilte = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $image = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -74,6 +77,18 @@ class Transport
     public function setDisponibilte(bool $disponibilte): static
     {
         $this->disponibilte = $disponibilte;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }
