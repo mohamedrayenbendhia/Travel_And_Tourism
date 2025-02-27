@@ -66,10 +66,13 @@ final class RestaurantController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_restaurant_show', methods: ['GET'])]
-    public function show(Restaurant $restaurant): Response
+    public function show(Restaurant $restaurant, Request $request): Response
     {
+        $isAdmin = $request->query->has('a');
+
         return $this->render('restaurant/show.html.twig', [
             'restaurant' => $restaurant,
+            'isAdmin' => $isAdmin,
         ]);
     }
 
