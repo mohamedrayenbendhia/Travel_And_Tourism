@@ -56,7 +56,29 @@
         {% endblock %}
     </head>
     <body>
-    
+  <div class="navbar" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 10px 20px; background-color: #f8f9fa;">
+  <div class="navbar-links" style="display: flex; justify-content: space-between; width: 80%;">
+    <div class="col-md-6 col-lg-6" style="display: flex; align-items: center;">
+      <h1 class="mb-0"><a href="index.html" class="text-black h2 mb-0"><strong>Homeland<span class="text-danger">.</span></strong></a></h1>
+    </div>
+    <div class="col-md-6 col-lg-6" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <ul class="list-unstyled" style="display: flex; margin: 0; padding: 0; justify-content: space-between; width: 100%;">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Buy</a></li>
+        <li><a href="#">Rent</a></li>
+        <li><a href="#">Properties</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="navbar-buttons" style="display: flex; align-items: center; justify-content: flex-end; width: 20%;">
+    <a href="{{ path('app_restaurant_index') }}" class="btn btn-primary" style="margin-left: 10px;">Restaurants</a>
+    <a href="{{ path('app_transport_index') }}" class="btn btn-primary" style="margin-left: 10px;">Transports</a>
+  </div>
+</div>
+
+
+
+
         <div class="content-wrapper">
             {# <div class="site-navbar mt-4">
                 <div class="container py-1">
@@ -78,10 +100,7 @@
                     </div>
                 </div>
             </div> #}
-            <header>
-                <a href="{{ path('app_restaurant_index') }}" class="btn">Restaurants</a>
-                <a href="{{ path('app_transport_index') }}" class="btn">Transports</a>
-            </header>
+           
             {% block body %}{% endblock %}
         </div>
         
