@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des rôles pour {{ user.username }}{% endblock %}
+
+{% block body %}
+    <h1>Gestion des rôles pour {{ user.username }}</h1>
+
+    <div class="container">
+        {{ form_start(form) }}
+        
+        <div class="form-group">
+            {{ form_label(form.roles, 'Sélectionner les rôles') }}
+            <div>
+                {% for choice in form.roles %}
+                    <div class="form-check">
+                        {{ form_widget(choice) }}
+                        {{ form_label(choice) }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Mettre à jour les rôles</button>
+
+        {{ form_end(form) }}
+    </div>
+
+    <br>
+    <a href="{{ path('user_management') }}">Retour à la gestion des utilisateurs</a>
+{% endblock %}

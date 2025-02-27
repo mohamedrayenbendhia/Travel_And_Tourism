@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="site-wrap">
+
+    <div class="container">
+        <!-- Ajouter un vlog -->
+        <a href="{{ path('vlog_new') }}" class="btn btn-success mb-3">
+            <i class="fas fa-plus-circle"></i>
+        </a>
+    </div>
+
+    <div class="site-section">
+        <div class="container">
+            <div class="row">
+                {% for vlog in vlogs %}
+                    {% if vlog.author == app.user %}
+                        <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up">
+                            <a href="{{ path('vlog_show', {'id': vlog.id}) }}">
+                                <!-- Affichage de l'image -->
+                                {% if vlog.image %}
+                                    <div class="mb-4">
+                                        <img src="{{ asset('uploads/images/vlogs/' ~ vlog.image) }}" alt="Image" class="img-fluid">
+                                    </div>
+                                {% endif %}
+                            </a>
+                            <div class="p-4 bg-white">
+                                <span class="d-block text-secondary small text-uppercase">{{ vlog.createdAt|date("M d, Y") }}</span>
+                                <!-- Affichage du nom de l'auteur -->
+                                <span class="d-block text-secondary small text-uppercase">Publié par : {{ vlog.author.username }}</span>
+                                <p>{{ vlog.content|slice(0, 100) }}...</p> <!-- Affiche un extrait du contenu -->
+                                {% if vlog.video %}
+                                    <video width="100%" controls>
+                                        <source src="{{ asset('uploads/vlogs/' ~ vlog.video) }}" type="video/mp4">
+                                        Votre navigateur ne supporte pas la lecture de vidéos.
+                                    </video>
+                                {% endif %}
+                                <div class="mt-3">
+                                    <!-- Voir plus -->
+                                    <a href="{{ path('vlog_show', {'id': vlog.id}) }}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    <!-- Editer -->
+                                    <a href="{{ path('vlog_edit', {'id': vlog.id}) }}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <!-- Supprimer -->
+                                    <form action="{{ path('vlog_delete', {'id': vlog.id}) }}" method="POST" style="display:inline;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ vlog.id) }}">
+                                        <input type="hidden" name="_method" value="DELETE">  <!-- Simule la méthode DELETE -->
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

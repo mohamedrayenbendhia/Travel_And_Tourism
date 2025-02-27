@@ -1,0 +1,11 @@
+{# templates/reclamation/voir.html.twig #}
+
+<h1>Détails de la réclamation</h1>
+
+<p><strong>Titre :</strong> {{ reclamation.titre }}</p>
+<p><strong>Description :</strong> {{ reclamation.description }}</p>
+<p><strong>Catégorie :</strong> {{ reclamation.categorie }}</p>
+<p><strong>Statut :</strong> {{ reclamation.statut }}</p>
+<p><strong>Date de soumission :</strong> {{ reclamation.dateSoumission|date('d/m/Y H:i') }}</p>
+
+{# Si vous avez d'autres propriétés, vous pouvez les afficher ici. #}

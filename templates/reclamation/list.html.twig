@@ -1,0 +1,37 @@
+{# templates/reclamation/list.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Réclamations{% endblock %}
+
+{% block body %}
+    <h1>Liste des Réclamations</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Catégorie</th>
+                <th>Statut</th>
+                <th>Date de soumission</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reclamation in reclamations %}
+                <tr>
+                    <td>{{ reclamation.titre }}</td>
+                    <td>{{ reclamation.categorie }}</td>
+                    <td>{{ reclamation.statut }}</td>
+                    <td>{{ reclamation.dateSoumission|date('d/m/Y') }}</td>
+                    <td>
+                        <a href="{{ path('reclamation_suivi', {'id': reclamation.id}) }}" class="btn btn-info">Suivi</a>
+                        {% if reclamation.statut == 'résolue' %}
+                            <a href="{{ path('reclamation_evaluation', {'id': reclamation.id}) }}" class="btn btn-warning">Évaluer</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

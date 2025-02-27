@@ -1,0 +1,41 @@
+{% extends 'page/index.html.twig' %}
+
+{% block body %}
+
+
+    <div class="site-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div class="bg-white p-5 rounded shadow-sm">
+                        <h2 class="mb-4">{{ vlog.createdAt|date('M d, Y') }}</h2>
+                        <p class="lead">{{ vlog.content }}</p>
+
+                        {% if vlog.image %}
+                            <div class="mb-4">
+{% if vlog.image %}
+    <img src="{{ asset('uploads/images/vlogs/' ~ vlog.image) }}" alt="Image" class="img-fluid">
+{% else %}
+    <img src="{{ asset('images/default-image.jpg') }}" alt="Image par défaut" class="img-fluid">
+{% endif %}                            </div>
+                        {% endif %}
+
+                        {% if vlog.video %}
+                            <div class="mb-4">
+                                <video width="100%" controls>
+                                    <source src="{{ asset('uploads/videos/' ~ vlog.video) }}" type="video/mp4">
+                                    Votre navigateur ne supporte pas la lecture de vidéos.
+                                </video>
+                            </div>
+                        {% endif %}
+
+                        <a href="{{ path('vlog_index') }}" class="btn btn-secondary mt-3">
+                            <i class="fas fa-arrow-left"></i> Retour à la liste des vlogs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

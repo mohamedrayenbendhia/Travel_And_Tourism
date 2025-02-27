@@ -1,0 +1,20 @@
+{# templates/reclamation/submit.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Soumettre une Réclamation{% endblock %}
+
+{% block body %}
+    <h1>Soumettre une Réclamation</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.titre) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.photo) }}
+        {{ form_row(form.document) }}
+        {{ form_row(form.categorie) }}
+        <button class="btn btn-primary">{{ form.submit.vars.label }}</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_home') }}" class="btn btn-secondary">Retour à l'accueil</a>
+{% endblock %}

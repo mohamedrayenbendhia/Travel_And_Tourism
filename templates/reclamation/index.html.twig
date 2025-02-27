@@ -1,0 +1,50 @@
+{# templates/reclamation/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des réclamations{% endblock %}
+
+{% block body %}
+    <h1>Liste des réclamations en cours</h1>
+
+    {% if reclamations is not empty %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Description</th>
+                    <th>Catégorie</th>
+                    <th>Statut</th>
+                    <th>Date de soumission</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reclamation in reclamations %}
+                    <tr>
+                        <td>{{ reclamation.titre }}</td>
+                        <td>{{ reclamation.description }}</td>
+                        <td>{{ reclamation.categorie }}</td>
+                        <td>{{ reclamation.statut }}</td>
+                        <td>{{ reclamation.dateSoumission|date('d/m/Y H:i') }}</td>
+                        <td>
+                            {# Lien vers une page de détail de la réclamation #}
+                            <a href="{{ path('app_reclamationsvoir', {'id': reclamation.id}) }}">Voir</a>
+                            {# Lien pour résoudre ou refuser la réclamation #}
+                            <a href="{{ path('app_reclamation_resolve', {'id': reclamation.id}) }}">Résoudre</a>
+                            <a href="{{ path('app_reclamation_refuse', {'id': reclamation.id}) }}">Refuser</a>
+                        </td>
+                        <td>  {% if reclamation is defined %}
+                <a href="{{ path('reclamation_suivi', {'id': reclamation.id}) }}">Voir le suivi</a>
+                <a href="{{ path('reclamation_evaluation', {'id': reclamation.id}) }}">Évaluer</a>
+            {% endif %} </td>
+                    </tr>
+                    
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune réclamation en cours.</p>
+        
+    {% endif %}
+{% endblock %}

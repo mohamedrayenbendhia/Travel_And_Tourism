@@ -1,0 +1,27 @@
+{# templates/reclamation/suivi.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Suivi de la Réclamation{% endblock %}
+
+{% block body %}
+    <h1>Suivi de la Réclamation</h1>
+
+    <div>
+        <h2>{{ reclamation.titre }}</h2>
+        <p><strong>Description:</strong> {{ reclamation.description }}</p>
+        <p><strong>Catégorie:</strong> {{ reclamation.categorie }}</p>
+        <p><strong>Statut:</strong> {{ reclamation.statut }}</p>
+        <p><strong>Date de soumission:</strong> {{ reclamation.dateSoumission|date('d/m/Y') }}</p>
+        
+        <h3>Photos et Documents</h3>
+        {% if reclamation.photo %}
+            <p><strong>Photo:</strong> <img src="{{ asset('uploads/photos/' ~ reclamation.photo) }}" alt="Photo de la réclamation"></p>
+        {% endif %}
+        {% if reclamation.document %}
+            <p><strong>Document:</strong> <a href="{{ asset('uploads/documents/' ~ reclamation.document) }}" target="_blank">Voir le document</a></p>
+        {% endif %}
+        
+        <a href="{{ path('home') }}" class="btn btn-secondary">Retour à l'accueil</a>
+    </div>
+{% endblock %}
