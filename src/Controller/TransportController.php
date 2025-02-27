@@ -10,6 +10,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+
 
 #[Route('/transport')]
 final class TransportController extends AbstractController
@@ -26,24 +30,41 @@ final class TransportController extends AbstractController
     }
 
     #[Route('/new', name: 'app_transport_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $transport = new Transport();
-        $form = $this->createForm(TransportType::class, $transport);
-        $form->handleRequest($request);
+public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+{
+    $transport = new Transport();
+    $form = $this->createForm(TransportType::class, $transport);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($transport);
-            $entityManager->flush();
+    if ($form->isSubmitted() && $form->isValid()) {
+        $imageFile = $form->get('imageFile')->getData();
+        if ($imageFile) {
+            $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = $slugger->slug($originalFilename);
+            $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
 
-            return $this->redirectToRoute('app_transport_index', [], Response::HTTP_SEE_OTHER);
+            try {
+                $imageFile->move(
+                    $this->getParameter('transport_images_directory'), // Assure-toi que ce paramètre est bien défini dans `services.yaml`
+                    $newFilename
+                );
+                $transport->setImage($newFilename);
+            } catch (FileException $e) {
+                $this->addFlash('error', 'Image upload failed.');
+            }
         }
 
-        return $this->render('transport/new.html.twig', [
-            'transport' => $transport,
-            'form' => $form,
-        ]);
+        $entityManager->persist($transport);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_transport_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    return $this->render('transport/new.html.twig', [
+        'transport' => $transport,
+        'form' => $form,
+    ]);
+}
 
     #[Route('/{id}', name: 'app_transport_show', methods: ['GET'])]
     public function show(Transport $transport): Response

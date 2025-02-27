@@ -1,4 +1,11 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+
+{{ form_row(form.type) }}
+{{ form_row(form.description) }}
+{{ form_row(form.prix) }}
+{{ form_row(form.disponibilte) }}
+{{ form_row(form.imageFile) }} {# Affichage correct du champ imageFile #}
+
+<button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+
 {{ form_end(form) }}

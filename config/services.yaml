@@ -6,6 +6,7 @@
 parameters:
     restaurant_images_directory: '%kernel.project_dir%/public/uploads/restaurants'
 
+    transport_images_directory: '%kernel.project_dir%/public/uploads/transports'
 services:
     # default configuration for services in *this* file
     _defaults:
