@@ -33,7 +33,7 @@
                     <td>
                         {% if transport.image %}
                             <img src="{{ asset('uploads/transports/' ~ transport.image) }}" 
-                                 alt="{{ transport.nom }}" width="200" class="img-thumbnail">
+                                 alt="photo {{ transport.type }}" width="200" class="img-thumbnail">
                         {% else %}
                             No image available
                         {% endif %}
@@ -44,10 +44,10 @@
     </div>
 
 
-<a href="{{ path('app_restaurant_index') }}" class="btn btn-secondary">Back to List</a>
+<a href="{{ path('app_transport_index') }}" class="btn btn-secondary">Back to List</a>
 {% if isAdmin %}
-    <a href="{{ path('app_restaurant_edit', {'id': restaurant.id}) }}" class="btn btn-warning">Edit</a>
-
+    <a href="{{ path('app_transport_edit', {'id': transport.id}) }}" class="btn btn-warning">Edit</a>
+    {{ include('transport/_delete_form.html.twig') }}
     <a href="{{ path('app_transport_new') }}" class="btn btn-success mt-3">Ajouter un transport</a>
 {% endif %}
 {% endblock %}

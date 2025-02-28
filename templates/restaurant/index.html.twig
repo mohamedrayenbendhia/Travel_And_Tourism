@@ -37,7 +37,7 @@
                 </a>
                 <div class="p-4 bg-white">
                 <span class="d-block text-secondary small text-uppercase">{{ restaurant.localisation }}</span>
-                <h2 class="h5 text-black mb-3"><a href="#">{{ restaurant.nom }}</a></h2>
+                <h2 class="h5 text-black mb-3"><a href="{{ path('app_restaurant_show', {'id': restaurant.id}) }}">{{ restaurant.nom }}</a></h2>
                 <p>{{ restaurant.nom }} + Profitez de réductions exclusives et de promotions dans les restaurants tunisiens.</p>
                 </td>
                 </div>
@@ -74,7 +74,7 @@
                     </td>
                 </tr>
                 <td>
-                    <a href="{{ path('app_restaurant_show', {'id': restaurant.id}) }}" class="btn btn-primary btn-sm">show</a>
+                    <a href="{{ path('app_restaurant_show', {'id': restaurant.id}) }}?a" class="btn btn-primary btn-sm">show</a>
                     <a href="{{ path('app_restaurant_edit', {'id': restaurant.id}) }}" class="btn btn-warning btn-sm">edit</a>
                 </td>
             </tr>

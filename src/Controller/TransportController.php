@@ -67,10 +67,14 @@ public function new(Request $request, EntityManagerInterface $entityManager, Slu
 }
 
     #[Route('/{id}', name: 'app_transport_show', methods: ['GET'])]
-    public function show(Transport $transport): Response
+    public function show(Transport $transport, Request $request): Response
     {
+        $isAdmin = $request->query->has('a');
+
         return $this->render('transport/show.html.twig', [
             'transport' => $transport,
+            'isAdmin' => $isAdmin,
+
         ]);
     }
 
