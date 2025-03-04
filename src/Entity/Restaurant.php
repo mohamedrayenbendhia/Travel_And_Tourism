@@ -19,8 +19,22 @@ class Restaurant
     #[ORM\Column(length: 255)]
     private ?string $localisation = null;
 
-    #[ORM\OneToOne(mappedBy: 'restaurant_id', cascade: ['persist', 'remove'])]
-    private ?Menu $menu = null;
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
+
+    
+    #[ORM\Column]
+    private ?float $prix = null;
+
+    #[ORM\Column(type: "decimal", precision: 10, scale: 6, nullable: true)]
+    private ?float $lat = null;
+
+    #[ORM\Column(type: "decimal", precision: 10, scale: 6, nullable: true)]
+    private ?float $lng = null;
+
+
+    // #[ORM\OneToOne(mappedBy: 'restaurant_id', cascade: ['persist', 'remove'])]
+    // private ?Menu $menu = null;
 
     #[ORM\Column(length: 255)]
     private ?string $image = null;
@@ -87,4 +101,54 @@ class Restaurant
 
         return $this;
     }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getPrix(): ?float
+    {
+        return $this->prix;
+    }
+
+    public function setPrix(float $prix): static
+    {
+        $this->prix = $prix;
+
+        return $this;
+    }
+
+    public function getLat(): ?float
+    {
+        return $this->lat;
+    }
+
+    public function setLat(float $lat): static
+    {
+        $this->lat = $lat;
+
+        return $this;
+    }
+
+    public function getLng(): ?float
+    {
+        return $this->lng;
+    }
+
+    public function setLng(float $lng): static
+    {
+        $this->lng = $lng;
+
+        return $this;
+    }
+
+
 }

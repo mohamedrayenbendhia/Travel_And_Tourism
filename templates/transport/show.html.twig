@@ -3,51 +3,138 @@
 {% block title %}Transport{% endblock %}
 
 {% block body %}
-    <h1 class="mb-4">Transport</h1>
+<div class="site-section site-section-sm">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div>
+                    <div class="slide-one-item home-slider owl-carousel">
+                        <img src="{{ asset('uploads/transports/' ~ transport.image) }}" 
+                             alt="{{ transport.type }}" class="img-fluid w-100">
+                    </div>
+                </div>
+                <div class="bg-white property-body border-bottom border-left border-right">
+                    <div class="row mb-5">
+                        <div class="col-md-6 col-lg-6 text-center border-bottom border-top py-3">
+                            <span class="d-inline-block text-black mb-0 caption-text">Type</span>
+                            <strong class="d-block">{{ transport.type }}</strong>
+                        </div>
+                        <div class="col-md-6 col-lg-6 text-center border-bottom border-top py-3">
+                            <span class="d-inline-block text-black mb-0 caption-text">Prix</span>
+                            <strong class="d-block">{{ transport.prix }} DT</strong>
+                        </div>
+                    </div>
+                    <h2 class="h4 text-black">Description</h2>
+                    <p>{{ transport.description }}</p>
 
-<div class="card p-4 shadow-lg rounded">
-        <table class="table table-striped table-bordered">
-            <tbody>
-                <tr>
-                    <th>Id</th>
-                    <td>{{ transport.id }}</td>
-                </tr>
-                <tr>
-                    <th>Type</th>
-                    <td>{{ transport.type }}</td>
-                </tr>
-                <tr>
-                    <th>Description</th>
-                    <td>{{ transport.description }}</td>
-                </tr>
-                <tr>
-                    <th>Disponibilte</th>
-                    <td>{{ transport.disponibilte }}</td>
-                </tr>
-                <tr>
-                    <th>Prix</th>
-                    <td>{{ transport.prix }}</td>
-                </tr>
-                <tr>
-                    <th>Image</th>
-                    <td>
-                        {% if transport.image %}
-                            <img src="{{ asset('uploads/transports/' ~ transport.image) }}" 
-                                 alt="photo {{ transport.type }}" width="200" class="img-thumbnail">
-                        {% else %}
-                            No image available
-                        {% endif %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                    {% if reservations %}
+                        <h2 class="mt-4 h4 text-black">Unavailability Periods</h2>
+                        <ul class="list-group" id="unavailability-list">
+                            {% for reservation in reservations %}
+                                <li class="list-group-item">
+                                    From <span class="unavailable-start">{{ reservation.start_date|date('Y-m-d') }}</span>
+                                    to <span class="unavailable-end">{{ reservation.end_date|date('Y-m-d') }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    <!-- Reservation Form -->
+                    <h2 class="h4 text-black mt-4">Reserve This Car</h2>
+                    <form id="reservation-form">
+                        <div class="form-group">
+                            <label for="start_date">Start Date</label>
+                            <input type="date" id="start_date" name="start_date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="end_date">End Date</label>
+                            <input type="date" id="end_date" name="end_date" class="form-control" required>
+                        </div>
+                        <button type="submit" id="reserve-btn" class="btn btn-primary mt-3">Reserve</button>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
     </div>
-
+</div>
 
 <a href="{{ path('app_transport_index') }}" class="btn btn-secondary">Back to List</a>
-{% if isAdmin %}
-    <a href="{{ path('app_transport_edit', {'id': transport.id}) }}" class="btn btn-warning">Edit</a>
-    {{ include('transport/_delete_form.html.twig') }}
-    <a href="{{ path('app_transport_new') }}" class="btn btn-success mt-3">Ajouter un transport</a>
-{% endif %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const reservations = [];
+    document.querySelectorAll("#unavailability-list li").forEach(item => {
+        const start = new Date(item.querySelector(".unavailable-start").innerText);
+        const end = new Date(item.querySelector(".unavailable-end").innerText);
+        reservations.push({ start, end });
+    });
+
+    const startDateInput = document.getElementById("start_date");
+    const endDateInput = document.getElementById("end_date");
+    const reserveBtn = document.getElementById("reserve-btn");
+    const messageDiv = document.createElement("div"); 
+    messageDiv.style.color = "red";
+    messageDiv.style.marginTop = "10px";
+    reserveBtn.insertAdjacentElement("beforebegin", messageDiv);
+
+    function checkAvailability() {
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+
+        let isUnavailable = false;
+        reservations.forEach(res => {
+            if ((startDate >= res.start && startDate <= res.end) || 
+                (endDate >= res.start && endDate <= res.end) || 
+                (startDate <= res.start && endDate >= res.end)) {
+                isUnavailable = true;
+            }
+        });
+
+        if (isUnavailable) {
+            reserveBtn.disabled = true;
+            messageDiv.innerText = "The car is not available during this period.";
+        } else {
+            reserveBtn.disabled = false;
+            messageDiv.innerText = "";
+        }
+    }
+
+    startDateInput.addEventListener("change", checkAvailability);
+    endDateInput.addEventListener("change", checkAvailability);
+
+    document.getElementById("reservation-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+        if (reserveBtn.disabled) return;
+
+        const transportId = "{{ transport.id }}"; // Get the transport ID dynamically
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+        
+        fetch("{{ path('app_reservation_transport_new_res') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": "{{ csrf_token('create_reservation') }}"
+            },
+            body: JSON.stringify({
+                user_id: 1,  // Hardcoded user ID
+                transport_id: transportId,
+                start_date: startDate,
+                end_date: endDate,
+                statut: "confirmed"
+            })
+        }).then(response => {
+            if (response.ok) {
+                alert("Reservation successful!");
+                window.location.reload();
+            } else {
+                alert("Error creating reservation.");
+            }
+        }).catch(error => console.error("Error:", error));
+    });
+});
+</script>
+
+
 {% endblock %}

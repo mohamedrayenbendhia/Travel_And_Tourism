@@ -16,6 +16,21 @@ class TransportRepository extends ServiceEntityRepository
         parent::__construct($registry, Transport::class);
     }
 
+
+    public function searchTransports(?string $type): array
+    {
+        $qb = $this->createQueryBuilder('r');
+
+        if ($type) {
+            $qb->andWhere('r.type LIKE :type')
+            ->setParameter('type', "%$type%");
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    
+
     //    /**
     //     * @return Transport[] Returns an array of Transport objects
     //     */

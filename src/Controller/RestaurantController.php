@@ -16,16 +16,38 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/restaurant')]
 final class RestaurantController extends AbstractController
 {
+    // #[Route(name: 'app_restaurant_index', methods: ['GET'])]
+    // public function index(RestaurantRepository $restaurantRepository, Request $request): Response
+    // {
+    //     $isAdmin = $request->query->has('a');
+        
+    //     return $this->render('restaurant/index.html.twig', [
+    //         'restaurants' => $restaurantRepository->findAll(),
+    //         'isAdmin' => $isAdmin,
+    //     ]);
+    // }
+
     #[Route(name: 'app_restaurant_index', methods: ['GET'])]
     public function index(RestaurantRepository $restaurantRepository, Request $request): Response
     {
         $isAdmin = $request->query->has('a');
         
+        // Get search parameters and sanitize input
+        $nom = $request->query->get('nom', '');
+        $prix = $request->query->get('prix', '');
+    
+        // Ensure prix is either a float or null
+        $prix = is_numeric($prix) ? (float)$prix : null;
+    
+        // Fetch filtered restaurants
+        $restaurants = $restaurantRepository->searchRestaurants($nom, $prix);
+    
         return $this->render('restaurant/index.html.twig', [
-            'restaurants' => $restaurantRepository->findAll(),
+            'restaurants' => $restaurants,
             'isAdmin' => $isAdmin,
         ]);
     }
+    
 
     #[Route('/new', name: 'app_restaurant_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
@@ -34,7 +56,11 @@ final class RestaurantController extends AbstractController
         $form = $this->createForm(RestaurantType::class, $restaurant);
         $form->handleRequest($request);
 
+
+
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // dd($request->request->all());
             // Gestion de l'image
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {

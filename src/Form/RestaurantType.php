@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class RestaurantType extends AbstractType
 {
@@ -18,10 +19,18 @@ class RestaurantType extends AbstractType
         $builder
             ->add('nom')
             ->add('localisation')
-            ->add('menu', EntityType::class, [
-                'class' => Menu::class,
-                'choice_label' => 'id',
+            // ->add('menu', EntityType::class, [
+            //     'class' => Menu::class,
+            //     'choice_label' => 'id',
+            // ])
+            ->add('lat', HiddenType::class, [
+                'required' => false,
             ])
+            ->add('lng', HiddenType::class, [
+                'required' => false,
+            ])
+            ->add('description')
+            ->add('prix')
             ->add('imageFile', FileType::class, [
                 'label' => 'Restaurant Image',
                 'mapped' => false, // Not mapped to entity, handled manually in the controller

@@ -13,8 +13,8 @@ class Menu
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(inversedBy: 'menu', cascade: ['persist', 'remove'])]
-    private ?Restaurant $restaurant_id = null;
+    // #[ORM\OneToOne(inversedBy: 'menu', cascade: ['persist', 'remove'])]
+    // private ?Restaurant $restaurant_id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $plat = null;

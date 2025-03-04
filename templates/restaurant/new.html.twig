@@ -3,29 +3,33 @@
 {% block title %}New Restaurant{% endblock %}
 
 {% block stylesheets %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
+        /* General Page Styling */
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
+            background-color: #f4f7fc;
             color: #343a40;
             margin: 0;
             padding: 20px;
         }
 
+        /* Form Container */
         .container {
-            max-width: 600px;
+            max-width: 700px;
             margin: 50px auto;
             background: #ffffff;
-            padding: 20px;
+            padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             text-align: center;
-            font-size: 26px;
+            font-size: 28px;
             font-weight: bold;
             margin-bottom: 20px;
+            color: #007bff;
         }
 
         .form-container {
@@ -34,47 +38,104 @@
             gap: 15px;
         }
 
+        /* Labels & Inputs */
         label {
             font-weight: bold;
+            font-size: 14px;
+            color: #555;
         }
 
         input, textarea, select {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ced4da;
-            border-radius: 5px;
+            border-radius: 6px;
             font-size: 16px;
+            transition: all 0.3s ease;
         }
 
-        button {
+        input:focus, textarea:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+        }
+
+        /* Map Section */
+        #map {
+            height: 350px;
+            width: 100%;
+            border-radius: 6px;
+            margin-top: 10px;
+            cursor: pointer;
+            border: 2px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Latitude & Longitude Fields */
+        .location-inputs {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .location-inputs input {
+            flex: 1;
+            background-color: #e9ecef;
+            text-align: center;
+            font-weight: bold;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        /* Submit Button */
+        .btn-primary {
             background-color: #007bff;
             color: white;
-            padding: 10px;
+            padding: 12px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
-            width: 100%;
+            font-weight: bold;
+            transition: all 0.3s ease;
         }
 
-        button:hover {
+        .btn-primary:hover {
             background-color: #0056b3;
+            transform: scale(1.05);
         }
 
+        /* Back Button */
         .btn-secondary {
             display: block;
             text-align: center;
             background-color: #6c757d;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 6px;
             color: white;
             text-decoration: none;
             font-size: 16px;
-            margin-top: 10px;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s ease;
         }
 
         .btn-secondary:hover {
             background-color: #5a6268;
+            transform: scale(1.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                padding: 15px;
+            }
+
+            .location-inputs {
+                flex-direction: column;
+            }
         }
     </style>
 {% endblock %}
@@ -83,18 +144,82 @@
 <div class="container">
     <h1>Create New Restaurant</h1>
 
-    <div class="form-container">
-        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
-            {{ form_row(form.nom) }}
-            {{ form_row(form.localisation) }}
-            {{ form_row(form.menu) }}
-            {{ form_row(form.imageFile) }}
+   <div class="form-container">
+    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+        {{ form_row(form.nom) }}
+        
+        <!-- Map Section -->
+        <label for="map">Click on the Map to Specify the Location</label>
+        <div id="map"></div>
 
-            <button class="btn btn-primary">Save</button>
-        {{ form_end(form) }}
-    </div>
+        <!-- Latitude & Longitude Fields (Manually Inserted to Prevent Duplication) -->
+        <div class="location-inputs">
+    {{ form_row(form.lat, {'attr': {'readonly': 'readonly', 'id': 'latitude'}}) }}
+    {{ form_row(form.lng, {'attr': {'readonly': 'readonly', 'id': 'longitude'}}) }}
+</div>
+
+        {{ form_row(form.prix) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.imageFile) }}
+        {{ form_row(form.localisation) }}
+
+        {{ form_rest(form) }} {# This ensures other fields are  included without duplication #}
+
+        <button class="btn btn-primary">Save</button>
+    {{ form_end(form, {'render_rest': false}) }} {# Prevents automatic rendering of missing fields #}
+</div>
+
 
     <a href="{{ path('app_restaurant_index') }}" class="btn-secondary">Back to List</a>
 </div>
-{% endblock %}
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var latField = document.querySelector('input[name="restaurant[lat]"]');
+    var lngField = document.querySelector('input[name="restaurant[lng]"]');
+
+    if (!latField || !lngField) {
+        console.error("❌ Latitude or Longitude input fields not found!");
+        return;
+    }
+
+    var map = L.map('map').setView([35.6895, 10.1234], 6); // Default Tunisia location
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var marker;
+
+    function onMapClick(e) {
+        if (marker) {
+            map.removeLayer(marker);
+        }
+
+        marker = L.marker(e.latlng).addTo(map)
+            .bindPopup("Restaurant Location Selected")
+            .openPopup();
+
+        // Update form fields with selected coordinates
+        latField.value = e.latlng.lat.toFixed(6);
+        lngField.value = e.latlng.lng.toFixed(6);
+
+        console.log("📍 Selected Location:", latField.value, lngField.value);
+    }
+
+    map.on('click', onMapClick);
+
+    // Prevent form submission if no location is selected
+    document.querySelector("form").addEventListener("submit", function(event) {
+        if (!latField.value || !lngField.value) {
+            event.preventDefault();
+            alert("❌ Please select a location on the map before submitting.");
+        }
+    });
+});
+</script>
+
+
+
+{% endblock %}

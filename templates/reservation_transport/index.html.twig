@@ -9,7 +9,8 @@
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Date_reservation</th>
+                <th>Date début</th>
+                <th>Date fin</th>
                 <th>Statut</th>
                 <th>actions</th>
             </tr>
@@ -18,7 +19,8 @@
         {% for reservation_transport in reservation_transports %}
             <tr>
                 <td>{{ reservation_transport.id }}</td>
-                <td>{{ reservation_transport.dateReservation ? reservation_transport.dateReservation|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ reservation_transport.start_date ? reservation_transport.start_date|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ reservation_transport.end_date ? reservation_transport.end_date|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ reservation_transport.statut }}</td>
                 <td>
                     <a href="{{ path('app_reservation_transport_show', {'id': reservation_transport.id}) }}" class="btn btn-primary btn-sm">show</a>
@@ -27,7 +29,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="4" class="text-center">no records found</td>
+                <td colspan="5" class="text-center">no records found</td>
             </tr>
         {% endfor %}
         </tbody>

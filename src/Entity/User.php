@@ -12,7 +12,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_ID', fields: ['id'])]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+// class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements  PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -22,8 +23,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var list<string> The user roles
      */
-    #[ORM\Column]
-    private array $roles = [];
+    // #[ORM\Column]
+    // private array $roles = [];
 
     /**
      * @var string The hashed password
@@ -31,14 +32,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    //email column
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
+
     /**
      * @var Collection<int, ReservationTransport>
      */
     #[ORM\OneToMany(targetEntity: ReservationTransport::class, mappedBy: 'user_id')]
     private Collection $reservationTransports;
 
-    #[ORM\ManyToOne(inversedBy: 'utilisateur_id')]
-    private ?Commande $commande = null;
+
+
 
     public function __construct()
     {
@@ -67,29 +72,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->id;
     }
 
-    /**
-     * @see UserInterface
-     *
-     * @return list<string>
-     */
-    public function getRoles(): array
-    {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+    // /**
+    //  * @see UserInterface
+    //  *
+    //  * @return list<string>
+    //  */
+    // public function getRoles(): array
+    // {
+    //     $roles = $this->roles;
+    //     // guarantee every user at least has ROLE_USER
+    //     $roles[] = 'ROLE_USER';
 
-        return array_unique($roles);
-    }
+    //     return array_unique($roles);
+    // }
 
-    /**
-     * @param list<string> $roles
-     */
-    public function setRoles(array $roles): static
-    {
-        $this->roles = $roles;
+    // /**
+    //  * @param list<string> $roles
+    //  */
+    // public function setRoles(array $roles): static
+    // {
+    //     $this->roles = $roles;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     /**
      * @see PasswordAuthenticatedUserInterface
@@ -145,14 +150,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCommande(): ?Commande
+
+
+    public function getEmail(): ?string
     {
-        return $this->commande;
+        return $this->email;
     }
 
-    public function setCommande(?Commande $commande): static
+    public function setEmail(string $email): static
     {
-        $this->commande = $commande;
+        $this->email = $email;
 
         return $this;
     }

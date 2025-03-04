@@ -13,8 +13,12 @@
                 <td>{{ reservation_transport.id }}</td>
             </tr>
             <tr>
-                <th>Date_reservation</th>
-                <td>{{ reservation_transport.dateReservation ? reservation_transport.dateReservation|date('Y-m-d H:i:s') : '' }}</td>
+                <th>Date_debut</th>
+                <td>{{ reservation_transport.dateDebut ? reservation_transport.dateDebut|date('Y-m-d H:i:s') : '' }}</td>   
+            </tr>
+            <tr>
+                <th>Date_fin</th>
+                <td>{{ reservation_transport.dateFin ? reservation_transport.dateFin|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
             <tr>
                 <th>Statut</th>

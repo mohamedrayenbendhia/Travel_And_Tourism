@@ -19,14 +19,15 @@ class Commande
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'commande')]
-    private Collection $utilisateur_id;
-
-    /**
-     * @var Collection<int, Menu>
-     */
-    #[ORM\OneToMany(targetEntity: Menu::class, mappedBy: 'commande')]
-    private Collection $menu_id;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'commandes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $utilisateur = null; // Change from Collection to a single User
+    
+    // /**
+    //  * @var Collection<int, Menu>
+    //  */
+    // #[ORM\OneToMany(targetEntity: Menu::class, mappedBy: 'commande')]
+    // private Collection $menu_id;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date_commande = null;
@@ -34,10 +35,15 @@ class Commande
     #[ORM\Column(length: 255)]
     private ?string $statut = null;
 
+    
+    #[ORM\ManyToOne(inversedBy: 'commandeRestau')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Restaurant $restaurant = null;
+
     public function __construct()
     {
         $this->utilisateur_id = new ArrayCollection();
-        $this->menu_id = new ArrayCollection();
+        // $this->menu_id = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -48,10 +54,17 @@ class Commande
     /**
      * @return Collection<int, user>
      */
-    public function getUtilisateurId(): Collection
+    public function getUtilisateur(): ?User
     {
-        return $this->utilisateur_id;
+        return $this->utilisateur;
     }
+    
+    public function setUtilisateur(User $utilisateur): static
+    {
+        $this->utilisateur = $utilisateur;
+        return $this;
+    }
+
 
     public function addUtilisateurId(user $utilisateurId): static
     {
@@ -75,35 +88,35 @@ class Commande
         return $this;
     }
 
-    /**
-     * @return Collection<int, Menu>
-     */
-    public function getMenuId(): Collection
-    {
-        return $this->menu_id;
-    }
+    // /**
+    //  * @return Collection<int, Menu>
+    //  */
+    // public function getMenuId(): Collection
+    // {
+    //     return $this->menu_id;
+    // }
 
-    public function addMenuId(Menu $menuId): static
-    {
-        if (!$this->menu_id->contains($menuId)) {
-            $this->menu_id->add($menuId);
-            $menuId->setCommande($this);
-        }
+    // public function addMenuId(Menu $menuId): static
+    // {
+    //     if (!$this->menu_id->contains($menuId)) {
+    //         $this->menu_id->add($menuId);
+    //         $menuId->setCommande($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeMenuId(Menu $menuId): static
-    {
-        if ($this->menu_id->removeElement($menuId)) {
-            // set the owning side to null (unless already changed)
-            if ($menuId->getCommande() === $this) {
-                $menuId->setCommande(null);
-            }
-        }
+    // public function removeMenuId(Menu $menuId): static
+    // {
+    //     if ($this->menu_id->removeElement($menuId)) {
+    //         // set the owning side to null (unless already changed)
+    //         if ($menuId->getCommande() === $this) {
+    //             $menuId->setCommande(null);
+    //         }
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function getDateCommande(): ?\DateTimeInterface
     {
@@ -128,4 +141,18 @@ class Commande
 
         return $this;
     }
+
+    public function getRestaurantId(): ?Restaurant
+    {
+        return $this->restaurant;
+    }
+
+    public function setRestaurant(?Restaurant $restaurant): static
+    {
+        $this->restaurant = $restaurant; // FIX: Change from $this->restaurant_id to $this->restaurant
+        return $this;
+    }
+    
+
+
 }

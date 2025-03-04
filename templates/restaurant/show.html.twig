@@ -2,41 +2,270 @@
 
 {% block title %}Restaurant{% endblock %}
 
-{% block body %}
-    <h1 class="mb-4">Restaurant</h1>
-    <div class="card p-4 shadow-lg rounded">
-        <table class="table table-striped table-bordered">
-            <tbody>
-                <tr>
-                    <th>Id</th>
-                    <td>{{ restaurant.id }}</td>
-                </tr>
-                <tr>
-                    <th>Nom</th>
-                    <td>{{ restaurant.nom }}</td>
-                </tr>
-                <tr>
-                    <th>Localisation</th>
-                    <td>{{ restaurant.localisation }}</td>
-                </tr>
-                <tr>
-                    <th>Image</th>
-                    <td>
-                        {% if restaurant.image %}
-                            <img src="{{ asset('uploads/restaurants/' ~ restaurant.image) }}" 
-                                 alt="{{ restaurant.nom }}" width="200" class="img-thumbnail">
-                        {% else %}
-                            No image available
-                        {% endif %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+{% block stylesheets %}
+    {{ parent() }} {# Ensures base styles are included first #}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* Fix Map Styling Without Affecting Other Styles */
+        #map {
+            height: 400px; /* Set height for the map */
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1; /* Ensure it does not interfere with content */
+        }
 
+        /* Fix Leaflet Container */
+        .leaflet-container {
+            border-radius: 8px;
+            z-index: 0 !important;
+        }
+
+        /* Prevent Leaflet from breaking the layout */
+        .leaflet-top, .leaflet-bottom {
+            z-index: 1000 !important;
+        }
+
+        /* Fix overlapping UI elements */
+        .leaflet-control {
+            z-index: 1001 !important;
+        }
+        .leaflet-routing-container {
+    display: none !important;
+}
+
+    #route-duration {
+        padding: 10px;
+        margin-top: 10px;
+        margin-right: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 1000;
+        background-color: rgba(255, 255, 255, 0.8);
+        
+    }
+
+    .route-display {
+        position: relative;
+    }
+
+
+
+    </style>
+{% endblock %}
+
+
+{% block body %}
+
+     {# <div class="site-blocks-cover inner-page-cover overlay" style="background-image: {{ asset('uploads/restaurants/' ~ restaurant.image) }};" data-aos="fade" data-stellar-background-ratio="0.5">
+      <div class="container">
+        <div class="row align-items-center justify-content-center text-center">
+          <div class="col-md-10">
+            <span class="d-inline-block text-white px-3 mb-3 property-offer-type rounded">Property Details of</span>
+            <h1 class="mb-2">{{ restaurant.nom }}</h1>
+            <p class="mb-5"><strong class="h2 text-success font-weight-bold">$1,000,500</strong></p>
+          </div>
+        </div>
+      </div>
+    </div> #}
+
+     <div class="site-section site-section-sm">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div>
+              <div class="slide-one-item home-slider owl-carousel">
+                   <img src="{{ asset('uploads/restaurants/' ~ restaurant.image) }}" 
+                                 alt="{{ restaurant.nom }}" class="img-fluid w-100">
+              </div>
+            </div>
+            <div class="bg-white property-body border-bottom border-left border-right">
+              <div class="row mb-5">
+                <div class="col-md-6 col-lg-4 text-center border-bottom border-top py-3">
+                  <span class="d-inline-block text-black mb-0 caption-text">Nom</span>
+                  <strong class="d-block">{{ restaurant.nom }}</strong>
+                </div>
+                <div class="col-md-6 col-lg-4 text-center border-bottom border-top py-3">
+                  <span class="d-inline-block text-black mb-0 caption-text">Localisation</span>
+                  <strong class="d-block">{{ restaurant.localisation }}</strong>
+                </div>
+                <div class="col-md-6 col-lg-4 text-center border-bottom border-top py-3">
+                  <span class="d-inline-block text-black mb-0 caption-text">Prix</span>
+                  <strong class="d-block">{{ restaurant.prix }} DT</strong>
+                </div>
+              </div>
+              <h2 class="h4 text-black">Description</h2>
+              <p>{{ restaurant.description }}</p>
+
+               <h2 class="h4 text-black mt-4">Location</h2>
+                              <div class="route-display">
+
+                    <div id="map"
+                    ></div>
+                                        <div id="route-duration"></div>
+
+                                   </div>
+
+
+
+                     <div class="col-lg-12 command-form">
+            <div class="card container mt-4">
+                <div class="card-body">
+                    <h4 class="text-black">Passer une Commande</h4>
+                          <form id="reservation-form">
+                        <div class="form-group">
+                            <label for="date_commande">Date commande</label>
+                            <input type="datetime-local" id="date_commande" name="date_commande" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="end_date">Statut</label>
+                            <input type="text" id="statut" name="statut" class="form-control" required>
+                        </div>
+                        <button type="submit" id="reserve-btn" class="btn btn-primary mt-3">Command</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+              
+            </div>
+          </div>
+        
+          
+        </div>
+      </div>
+    </div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var restaurantLat = {{ restaurant.lat|default(35.6895) }};
+    var restaurantLng = {{ restaurant.lng|default(10.1234) }};
+
+    var map = L.map('map', {
+        center: [restaurantLat, restaurantLng],
+        zoom: 14,
+        scrollWheelZoom: false,
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var restaurantMarker = L.marker([restaurantLat, restaurantLng]).addTo(map)
+        .bindPopup("<b>{{ restaurant.nom }}</b><br>{{ restaurant.localisation }}")
+        .openPopup();
+
+    var routingControl;
+
+    function showRoute(position) {
+        var userLat = position.coords.latitude;
+        var userLng = position.coords.longitude;
+
+        var userMarker = L.marker([userLat, userLng], {icon: L.icon({
+            iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
+            iconSize: [38, 38]
+        })}).addTo(map).bindPopup("Your Location").openPopup();
+
+      
+
+        if (typeof L.Routing !== "undefined") {
+            if (routingControl) {
+                map.removeControl(routingControl); // Remove previous route if exists
+            }
+
+            routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(userLat, userLng),
+                    L.latLng(restaurantLat, restaurantLng)
+                ],
+                routeWhileDragging: true,
+                createMarker: function() { 
+                    return L
+                 },
+                show: false,
+                addWaypoints: false,
+                fitSelectedRoutes: true,
+                lineOptions: {
+                    styles: [{ color: 'red', opacity: 0.7, weight: 4, dashArray: '10, 10' }]
+                }
+            }).addTo(map);
+
+            // Add Estimated Time Display
+            var durationDiv = document.getElementById("route-duration");
+            var routeDisplay = document.querySelector(".route-display");
+            if (!durationDiv) {
+                durationDiv = document.getElementById("route-duration");
+             
+                durationDiv.innerText = "Calculating travel time...";
+                routeDisplay.appendChild(durationDiv);
+            }
+
+            routingControl.on('routesfound', function(e) {
+                var duration = e.routes[0].summary.totalTime;
+                durationDisplay = "Estimated Travel Time: " + Math.round(duration / 60) + " mins";
+                durationDiv.innerText = durationDisplay;
+                  var tooltip = L.tooltip({ direction: 'bottom' })
+    .setLatLng([userLat, userLng])
+    .setContent(durationDisplay)
+    .addTo(map);
+
+            });
+        } else {
+            console.error("Leaflet Routing Machine is not available!");
+        }
+    }
+
+    function handleLocationError(error) {
+        console.error("Error getting location: " + error.message);
+        alert("Could not get your location. Please enable location services.");
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showRoute, handleLocationError);
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+
+    setTimeout(() => map.invalidateSize(), 300);
+
+    // Form Submission Handling
+    document.getElementById("reservation-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        fetch("{{ path('app_commande_new_res') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": "{{ csrf_token('create_commande') }}"
+            },
+            body: JSON.stringify({
+                restaurant_id: {{ restaurant.id }},
+                date_commande: document.getElementById("date_commande").value,
+                statut: document.getElementById("statut").value,
+                user_id: 1
+            })
+        }).then(response => {
+            if (response.ok) {
+                alert("Commande successful!");
+                window.location.reload();
+            } else {
+                alert("Error creating commande.");
+            }
+        }).catch(error => console.error("Error:", error));
+    });
+});
+</script>
+
+
+{# 
     <a href="{{ path('app_restaurant_index') }}" class="btn btn-secondary">Back to List</a>
 
     <a href="{{ path('app_restaurant_edit', {'id': restaurant.id}) }}" class="btn btn-warning">Edit</a>
 
-    {{ include('restaurant/_delete_form.html.twig') }}
+    {{ include('restaurant/_delete_form.html.twig') }} #}
 {% endblock %}

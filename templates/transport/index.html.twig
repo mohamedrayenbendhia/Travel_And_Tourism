@@ -13,10 +13,28 @@
       </div>
     </div>
 
+      <div class="container">
+        <div class="row">
+            <form class="form-search col-md-12" style="margin-top: -100px;" method="GET" action="{{ path('app_transport_index') }}">
+                <div class="row align-items-end">
+                    <div class="col-md-9">
+                        <label for="type">Type</label>
+                        <input type="text" name="type" class="form-control d-block rounded-0" value="{{ app.request.query.get('type', '') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="submit" class="btn btn-success text-white btn-block rounded-0" value="Search">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
 {%  if not isAdmin %}
     <div class="site-section">
       <div class="container">
         <div class="row">
+
+          {% if transports is not empty %}
           {% for transport in transports %}
             <div class="col-md-6 col-lg-4 mb-4">
                 <a href="#">
@@ -38,11 +56,21 @@
                 <div class="p-4 bg-white">
                 <span class="d-block text-secondary small text-uppercase">{{ transport.prix }}</span>
                 <h2 class="h5 text-black mb-3"><a href="{{ path('app_transport_show', {'id': transport.id}) }}">{{ transport.type }}</a></h2>
+                <p>{%if transport.isAvailable %} <span class="badge badge-success">Disponible</span> {% else %} <span class="badge badge-danger">Non disponible</span> {% endif %}</p>
                 <p>{{ transport.description }} + description </p>
                 </td>
                 </div>
             </div>
           {% endfor %}
+          {% else %}
+            <div class="col-12 text-center mt-5">
+                            <div class="alert alert-warning p-4 shadow-lg rounded">
+                                <h4 class="mb-3"><i class="fas fa-exclamation-circle"></i> Aucun résultat trouvé</h4>
+                                <p class="text-muted">Essayez de modifier vos critères de recherche.</p>
+                                <a href="{{ path('app_transport_index') }}" class="btn btn-primary">Réinitialiser</a>
+                            </div>
+                        </div>
+          {% endif %}
         </div>
       </div>
     </div>

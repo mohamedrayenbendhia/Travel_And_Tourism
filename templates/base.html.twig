@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="{{asset("../assets/css/animate.css") }}">
     <link rel="stylesheet" href="{{asset("../assets/css/fonts/flaticon/font/flaticon.css")}}">
     <link rel="stylesheet" href="{{asset("../assets/css/fl-b{{asset('../assets/igmug-line.css") }}">
-    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   
     <link rel="stylesheet" href="{{asset("../assets/css/aos.css")}}">
 
@@ -37,6 +37,7 @@
         {% endblock %}
 
         {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
          <script src="{{asset("../assets/js/jquery-3.3.1.min.js")}}"></script>
   <script src="{{asset("../assets/js/jquery-migrate-3.0.1.min.js")}}"></script>
   <script src="{{asset("../assets/js/jquery-ui.js")}}"></script>
@@ -49,6 +50,8 @@
   <script src="{{asset("../assets/js/jquery.magnific-popup.min.js")}}"></script>
   <script src="{{asset("../assets/js/bootstrap-datepicker.min.js")}}"></script>
   <script src="{{asset("../assets/js/aos.js")}}"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 
   <script src="{{asset("../assets/js/main.js")}}"></script>
      
@@ -78,7 +81,7 @@
 
 
 
-        <div class="content-wrapper">
+        <div class="">
             {# <div class="site-navbar mt-4">
                 <div class="container py-1">
                     <div class="row align-items-center">

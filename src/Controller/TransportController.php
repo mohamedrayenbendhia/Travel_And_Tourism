@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Transport;
 use App\Form\TransportType;
+use App\Repository\ReservationTransportRepository;
 use App\Repository\TransportRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,12 +20,23 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 final class TransportController extends AbstractController
 {
     #[Route(name: 'app_transport_index', methods: ['GET'])]
-    public function index(TransportRepository $transportRepository, Request $request): Response
+    public function index(TransportRepository $transportRepository, Request $request, ReservationTransportRepository $reservationTransportRepository): Response
     {
         $isAdmin = $request->query->has('a');
 
+        $type = $request->query->get('type', '');
+
+
+        $transports = $transportRepository->searchTransports($type);
+
+        //loop over the transports and check if they are available or not and add an attribute to the transport object is available with the current date
+        foreach ($transports as $transport) {
+            $transport->isAvailable = $reservationTransportRepository->getTransportAvailabilityForCurrentDate($transport->getId()) ? false : true;
+        }
+        
+
         return $this->render('transport/index.html.twig', [
-            'transports' => $transportRepository->findAll(),
+            'transports' => $transports,
             'isAdmin' => $isAdmin,
         ]);
     }
@@ -66,15 +78,26 @@ public function new(Request $request, EntityManagerInterface $entityManager, Slu
     ]);
 }
 
+    // #[Route('/{id}', name: 'app_transport_show', methods: ['GET'])]
+    // public function show(Transport $transport, Request $request): Response
+    // {
+    //     $isAdmin = $request->query->has('a');
+
+    //     return $this->render('transport/show.html.twig', [
+    //         'transport' => $transport,
+    //         'isAdmin' => $isAdmin,
+
+    //     ]);
+    // }
+
     #[Route('/{id}', name: 'app_transport_show', methods: ['GET'])]
-    public function show(Transport $transport, Request $request): Response
+    public function show(Transport $transport, ReservationTransportRepository $reservationTransportRepository): Response
     {
-        $isAdmin = $request->query->has('a');
+        $reservations = $reservationTransportRepository->getTransportAvailability($transport->getId());
 
         return $this->render('transport/show.html.twig', [
             'transport' => $transport,
-            'isAdmin' => $isAdmin,
-
+            'reservations' => $reservations,
         ]);
     }
 

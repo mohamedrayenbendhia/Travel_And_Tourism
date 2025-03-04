@@ -18,12 +18,15 @@ class ReservationTransport
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user_id = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Transport $transport_id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date_reservation = null;
+    private ?\DateTimeInterface $start_date = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $end_date = null;
 
     #[ORM\Column(length: 255)]
     private ?string $statut = null;
@@ -41,7 +44,6 @@ class ReservationTransport
     public function setUserId(?User $user_id): static
     {
         $this->user_id = $user_id;
-
         return $this;
     }
 
@@ -53,19 +55,28 @@ class ReservationTransport
     public function setTransportId(Transport $transport_id): static
     {
         $this->transport_id = $transport_id;
-
         return $this;
     }
 
-    public function getDateReservation(): ?\DateTimeInterface
+    public function getStartDate(): ?\DateTimeInterface
     {
-        return $this->date_reservation;
+        return $this->start_date;
     }
 
-    public function setDateReservation(\DateTimeInterface $date_reservation): static
+    public function setStartDate(\DateTimeInterface $start_date): static
     {
-        $this->date_reservation = $date_reservation;
+        $this->start_date = $start_date;
+        return $this;
+    }
 
+    public function getEndDate(): ?\DateTimeInterface
+    {
+        return $this->end_date;
+    }
+
+    public function setEndDate(\DateTimeInterface $end_date): static
+    {
+        $this->end_date = $end_date;
         return $this;
     }
 
@@ -77,7 +88,6 @@ class ReservationTransport
     public function setStatut(string $statut): static
     {
         $this->statut = $statut;
-
         return $this;
     }
 }

@@ -16,6 +16,36 @@ class ReservationTransportRepository extends ServiceEntityRepository
         parent::__construct($registry, ReservationTransport::class);
     }
 
+    public function getTransportAvailability(int $transportId): array
+    {
+        return $this->createQueryBuilder('r')
+            ->select('r.start_date, r.end_date')
+            ->where('r.transport_id = :transportId')
+            ->setParameter('transportId', $transportId)
+            ->getQuery()
+            ->getResult();
+    }
+
+
+    public function getTransportAvailabilityForCurrentDate(int $transportId): bool
+    {
+        $currentDate = new \DateTime();
+        $currentDate = $currentDate->format('Y-m-d H:i:s');
+
+        $result = $this->createQueryBuilder('r')
+            ->select('r.start_date, r.end_date')
+            ->where('r.transport_id = :transportId')
+            ->andWhere('r.start_date <= :currentDate')
+            ->andWhere('r.end_date >= :currentDate')
+            ->setParameter('transportId', $transportId)
+            ->setParameter('currentDate', $currentDate)
+            ->getQuery()
+            ->getResult();
+
+        return count($result) > 0;
+    }
+    
+
 //    /**
 //     * @return ReservationTransport[] Returns an array of ReservationTransport objects
 //     */
