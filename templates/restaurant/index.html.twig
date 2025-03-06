@@ -1,120 +1,147 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Restaurant index{% endblock %}
+{% block title %}Liste des Restaurants{% endblock %}
 
 {% block body %}
-    <div class="site-blocks-cover inner-page-cover overlay" style="background-image: url({{ asset('assets/images/Cover-Resto.jpg') }});">
-      <div class="container">
-        <div class="row align-items-center justify-content-center text-center">
-          <div class="col-md-10">
-            <h1 class="mb-2">Liste des Restaurants</h1>
-          </div>
-        </div>
-      </div>
-    </div>
+<style>
+.property-thumbnail {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+}
+.img-fit {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.empty-placeholder {
+    text-align: center;
+    font-size: 1.2em;
+    color: #888;
+    padding: 20px;
+}
+</style>
 
+<div class="site-blocks-cover inner-page-cover overlay" style="background-image: url({{ asset('assets/images/Cover-Resto.jpg') }});">
     <div class="container">
-        <div class="row">
-            <form class="form-search col-md-12" style="margin-top: -100px;" method="GET" action="{{ path('app_restaurant_index') }}">
-                <div class="row align-items-end">
-                    <div class="col-md-6">
-                        <label for="nom">Nom</label>
-                        <input type="text" name="nom" class="form-control d-block rounded-0" value="{{ app.request.query.get('nom', '') }}">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="prix">Prix</label>
-                        <input type="number" name="prix" class="form-control d-block rounded-0" value="{{ app.request.query.get('prix', '') }}">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="submit" class="btn btn-success text-white btn-block rounded-0" value="Search">
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {% if not isAdmin %}
-        <div class="site-section">
-            <div class="container">
-                <div class="row">
-                    {% if restaurants is not empty %}
-                        {% for restaurant in restaurants %}
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="property-entry h-100">
-                                    <a href="{{ path('app_restaurant_show', {'id': restaurant.id}) }}" class="property-thumbnail">
-                                        <img src="{{ asset('uploads/restaurants/' ~ restaurant.image) }}" alt="{{ restaurant.nom }}" class="img-fluid">
-                                    </a>
-                                    <div class="p-4 property-body">
-                                        <h2 class="property-title">
-                                            <a href="{{ path('app_restaurant_show', {'id': restaurant.id}) }}">{{ restaurant.nom }}</a>
-                                        </h2>
-                                        <span class="property-location d-block mb-3">
-                                            <span class="property-icon icon-room"></span> {{ restaurant.localisation }}
-                                        </span>
-                                        <strong class="property-price text-primary mb-3 d-block text-success">{{ restaurant.prix }} DT</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="col-12 text-center mt-5">
-                            <div class="alert alert-warning p-4 shadow-lg rounded">
-                                <h4 class="mb-3"><i class="fas fa-exclamation-circle"></i> Aucun résultat trouvé</h4>
-                                <p class="text-muted">Essayez de modifier vos critères de recherche.</p>
-                                <a href="{{ path('app_restaurant_index') }}" class="btn btn-primary">Réinitialiser</a>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
+        <div class="row align-items-center justify-content-center text-center">
+            <div class="col-md-10">
+                <h1 class="mb-2">Liste des Restaurants</h1>
             </div>
         </div>
-    {% else %}
-        <div class="card p-4 shadow-lg rounded">
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Nom</th>
-                        <th>Localisation</th>
-                        <th>Image</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if restaurants is not empty %}
-                        {% for restaurant in restaurants %}
-                            <tr>
-                                <td>{{ restaurant.id }}</td>
-                                <td>{{ restaurant.nom }}</td>
-                                <td>{{ restaurant.localisation }}</td>
-                                <td>
-                                    {% if restaurant.image %}
-                                        <img src="{{ asset('uploads/restaurants/' ~ restaurant.image) }}" alt="{{ restaurant.nom }}" width="40" class="img-thumbnail">
-                                    {% else %}
-                                        No image available
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <a href="{{ path('app_restaurant_show', {'id': restaurant.id}) }}" class="btn btn-primary btn-sm">Show</a>
-                                    <a href="{{ path('app_restaurant_edit', {'id': restaurant.id}) }}" class="btn btn-warning btn-sm">Edit</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    {% else %}
+    </div>
+</div>
+
+{% set hasAccess = is_granted('ROLE_ADMIN') or is_granted('ROLE_RESTAURANT') %}
+{% if not hasAccess %}
+<div class="container">
+    <div class="row">
+        <form class="form-search col-md-12" style="margin-top: -100px;" method="GET" action="{{ path('app_restaurant_index') }}">
+            <div class="row align-items-end">
+                <div class="col-md-6">
+                    <label for="nom">Nom</label>
+                    <input type="text" name="nom" class="form-control d-block rounded-0" value="{{ app.request.query.get('nom', '') }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="prix">Prix</label>
+                    <input type="number" name="prix" class="form-control d-block rounded-0" value="{{ app.request.query.get('prix', '') }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="submit" class="btn btn-success text-white btn-block rounded-0" value="Rechercher">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+
+
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_RESTAURANT') %}
+    <div class="m-4 card p-4 shadow-lg rounded">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Localisation</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if restaurants is not empty %}
+                    {% for restaurant in restaurants %}
                         <tr>
-                            <td colspan="5" class="text-center">
-                                <div class="alert alert-warning p-4 shadow-lg rounded">
-                                    <h4 class="mb-3"><i class="fas fa-exclamation-circle"></i> Aucun résultat trouvé</h4>
-                                    <p class="text-muted">Essayez de modifier vos critères de recherche.</p>
-                                    <a href="{{ path('app_restaurant_index') }}" class="btn btn-primary">Réinitialiser</a>
-                                </div>
+                            <td>{{ restaurant.nom }}</td>
+                            <td>{{ restaurant.localisation }}</td>
+                            <td>
+                                {% if restaurant.image %}
+                                    <img src="{{ asset('uploads/restaurants/' ~ restaurant.image) }}" alt="{{ restaurant.nom }}" width="40" class="img-thumbnail">
+                                {% else %}
+                                    No image available
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ path('app_restaurant_show', {'id': restaurant.id}) }}" class="btn btn-primary btn-sm">Show</a>
+                                {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_RESTAURANT') and restaurant.user == app.user) %}
+                                    <a href="{{ path('app_restaurant_edit', {'id': restaurant.id}) }}" class="btn btn-warning btn-sm">Edit</a>
+                                {% endif %}
                             </td>
                         </tr>
-                    {% endif %}
-                </tbody>
-            </table>
-        </div>
-        <a href="{{ path('app_restaurant_new') }}" class="btn btn-success mt-2">Create new</a>
-    {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="empty-placeholder">
+                            {% if is_granted('ROLE_ADMIN') %}
+                                Aucun restaurant trouvé. Ajoutez un nouveau restaurant en utilisant le bouton ci-dessous.
+                            {% else %}
+                                Vous n'avez pas encore ajouté de restaurant. Cliquez sur "Créer un restaurant" pour commencer.
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
 
+    {% if is_granted('ROLE_RESTAURANT') %}
+        <a href="{{ path('app_restaurant_new') }}" class="btn btn-success m-4">Créer un restaurant</a>
+    {% endif %}
+{% else %}
+    <div class="site-section">
+        <div class="container">
+            <div class="row">
+                {% if restaurants is not empty %}
+                    {% for restaurant in restaurants %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="property-entry h-100">
+                                <a href="{{ path('app_restaurant_show', {'id': restaurant.id}) }}" class="property-thumbnail">
+                                    <img src="{{ asset('uploads/restaurants/' ~ restaurant.image) }}" alt="{{ restaurant.nom }}" class="img-fit">
+                                </a>
+                                <div class="p-4 property-body">
+                                    <h2 class="property-title">
+                                        <a href="{{ path('app_restaurant_show', {'id': restaurant.id}) }}">{{ restaurant.nom }}</a>
+                                    </h2>
+                                    <span class="property-location d-block mb-3">{{ restaurant.localisation }}</span>
+                                    <strong class="property-price text-primary mb-3 d-block text-success">{{ restaurant.prix }} DT</strong>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center mt-5">
+                        <div class="alert alert-warning p-4 shadow-lg rounded">
+                            <h4 class="mb-3"><i class="fas fa-exclamation-circle"></i> Aucun restaurant disponible</h4>
+                            <p class="text-muted">Soyez le premier à en ajouter un.</p>
+                            {% if is_granted('ROLE_RESTAURANT') %}
+                                <a href="{{ path('app_restaurant_new') }}" class="btn btn-success">Créer un restaurant</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endif %}
 {% endblock %}

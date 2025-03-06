@@ -5,6 +5,9 @@
 {% block stylesheets %}
     {{ parent() }} {# Ensures base styles are included first #}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+  
     <style>
         /* Fix Map Styling Without Affecting Other Styles */
         #map {
@@ -54,6 +57,18 @@
         position: relative;
     }
 
+        .owl-carousel .item img {
+        width: 100%; /* Make sure the image takes full width */
+        height: 400px; /* Set a fixed height for consistency */
+        object-fit: cover; /* Crop image to fit without stretching */
+    }
+
+    .owl-carousel {
+        display: flex;
+        align-items: center; /* Center images vertically */
+        justify-content: center; /* Center images horizontally */
+    }
+
 
 
     </style>
@@ -78,12 +93,38 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-12">
-            <div>
+            {# <div>
               <div class="slide-one-item home-slider owl-carousel">
                    <img src="{{ asset('uploads/restaurants/' ~ restaurant.image) }}" 
                                  alt="{{ restaurant.nom }}" class="img-fluid w-100">
+
+                    
               </div>
+            </div> #}
+          <div>
+    <div class="slide-one-item home-slider owl-carousel">
+        {% if restaurant.image %}
+            <div class="item">
+                <img src="{{ asset('uploads/restaurants/' ~ restaurant.image) }}" alt="{{ restaurant.nom }}" class="img-fluid">
             </div>
+        {% endif %}
+
+        {% if restaurant.image1 %}
+            <div class="item">
+                <img src="{{ asset('uploads/restaurants/' ~ restaurant.image1) }}" alt="{{ restaurant.nom }} - Image 1" class="img-fluid">
+            </div>
+        {% endif %}
+
+        {% if restaurant.image2 %}
+            <div class="item">
+                <img src="{{ asset('uploads/restaurants/' ~ restaurant.image2) }}" alt="{{ restaurant.nom }} - Image 2" class="img-fluid">
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+
+
             <div class="bg-white property-body border-bottom border-left border-right">
               <div class="row mb-5">
                 <div class="col-md-6 col-lg-4 text-center border-bottom border-top py-3">
@@ -102,7 +143,7 @@
               <h2 class="h4 text-black">Description</h2>
               <p>{{ restaurant.description }}</p>
 
-               <h2 class="h4 text-black mt-4">Location</h2>
+               <h2 class="h4 text-black mt-4">Localisation</h2>
                               <div class="route-display">
 
                     <div id="map"
@@ -113,25 +154,27 @@
 
 
 
-                     <div class="col-lg-12 command-form">
-            <div class="card container mt-4">
-                <div class="card-body">
-                    <h4 class="text-black">Passer une Commande</h4>
-                          <form id="reservation-form">
-                        <div class="form-group">
-                            <label for="date_commande">Date commande</label>
-                            <input type="datetime-local" id="date_commande" name="date_commande" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="end_date">Statut</label>
-                            <input type="text" id="statut" name="statut" class="form-control" required>
-                        </div>
-                        <button type="submit" id="reserve-btn" class="btn btn-primary mt-3">Command</button>
-                    </form>
-                </div>
+{% if is_granted('ROLE_VOYAGEUR') or is_granted('ROLE_HOTE') %}
+    <div class="col-lg-12 command-form">
+        <div class="card container mt-4">
+            <div class="card-body">
+                <h4 class="text-black">Passer une Commande</h4>
+                <form id="reservation-form">
+                    <div class="form-group">
+                        <label for="date_commande">Date commande</label>
+                        <input type="datetime-local" id="date_commande" name="date_commande" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end_date">Statut</label>
+                        <input type="text" id="statut" name="statut" class="form-control" required>
+                    </div>
+                    <button type="submit" id="reserve-btn" class="btn btn-primary mt-3">Commander</button>
+                </form>
             </div>
         </div>
-              
+    </div>
+{% endif %}
+
             </div>
           </div>
         
@@ -142,6 +185,19 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 <script>
+  $(document).ready(function(){
+        $(".slide-one-item").owlCarousel({
+            loop: true,              
+            margin: 10,              
+            nav: true,               
+            dots: true,              
+            autoplay: true,          
+            autoplayTimeout: 3000,   
+            autoplayHoverPause: true,
+            items: 1,
+            autoHeight: true // Forces all slides to have the same height
+        });
+    });
 document.addEventListener("DOMContentLoaded", function () {
     var restaurantLat = {{ restaurant.lat|default(35.6895) }};
     var restaurantLng = {{ restaurant.lng|default(10.1234) }};
@@ -169,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var userMarker = L.marker([userLat, userLng], {icon: L.icon({
             iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
             iconSize: [38, 38]
-        })}).addTo(map).bindPopup("Your Location").openPopup();
+        })}).addTo(map).bindPopup("Votre localisation").openPopup();
 
       
 

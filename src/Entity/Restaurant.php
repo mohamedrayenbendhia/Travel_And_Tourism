@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\RestaurantRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User;
+
 
 #[ORM\Entity(repositoryClass: RestaurantRepository::class)]
 class Restaurant
@@ -38,6 +40,28 @@ class Restaurant
 
     #[ORM\Column(length: 255)]
     private ?string $image = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image1 = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image2 = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'restaurants')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+        return $this;
+    }
+
 
     public function getId(): ?int
     {
@@ -101,6 +125,33 @@ class Restaurant
 
         return $this;
     }
+
+
+    public function getImage1(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage1(string $image): static
+    {
+        $this->image1 = $image;
+
+        return $this;
+    }
+
+    public function getImage2(): ?string
+    {
+        return $this->image2;
+    }
+
+    public function setImage2(string $image): static
+    {
+        $this->image2 = $image;
+
+        return $this;
+    }
+
+
 
     public function getDescription(): ?string
     {

@@ -1,0 +1,19 @@
+{# templates/admin/user/create.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un Utilisateur{% endblock %}
+
+{% block body %}
+<h1>Créer un Utilisateur</h1>
+
+{{ form_start(form) }}
+    {{ form_row(form.username) }}  {# Affiche le champ 'username' du formulaire #}
+    {{ form_row(form.email) }}     {# Affiche le champ 'email' du formulaire #}
+    {{ form_row(form.password) }}  {# Affiche le champ 'password' du formulaire #}
+    {{ form_row(form.roles) }}     {# Affiche le champ 'roles' du formulaire #}
+    
+    <button type="submit">Créer</button>
+{{ form_end(form) }}
+
+{% endblock %}

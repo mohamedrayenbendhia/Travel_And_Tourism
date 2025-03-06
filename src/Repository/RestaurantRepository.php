@@ -18,21 +18,22 @@ class RestaurantRepository extends ServiceEntityRepository
 
     public function searchRestaurants(?string $nom, ?float $prix): array
     {
-        $qb = $this->createQueryBuilder('r');
-
+        $qb = $this->createQueryBuilder('r')
+            ->orderBy('r.id', 'DESC'); // Order by creation date in descending order
+    
         if ($nom) {
             $qb->andWhere('r.nom LIKE :nom')
-            ->setParameter('nom', "%$nom%");
+               ->setParameter('nom', "%$nom%");
         }
-
+    
         if ($prix) {
             $qb->andWhere('r.prix <= :prix')
-            ->setParameter('prix', $prix);
+               ->setParameter('prix', $prix);
         }
-
+    
         return $qb->getQuery()->getResult();
     }
-
+    
 
 //    /**
 //     * @return Restaurant[] Returns an array of Restaurant objects

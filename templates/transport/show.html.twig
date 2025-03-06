@@ -28,30 +28,38 @@
                     <p>{{ transport.description }}</p>
 
                     {% if reservations %}
-                        <h2 class="mt-4 h4 text-black">Unavailability Periods</h2>
+                        <h2 class="mt-4 h4 text-black">Période d'indisponibilité</h2>
                         <ul class="list-group" id="unavailability-list">
                             {% for reservation in reservations %}
                                 <li class="list-group-item">
-                                    From <span class="unavailable-start">{{ reservation.start_date|date('Y-m-d') }}</span>
-                                    to <span class="unavailable-end">{{ reservation.end_date|date('Y-m-d') }}</span>
+                                    De <span class="unavailable-start">{{ reservation.start_date|date('Y-m-d') }}</span>
+                                    à <span class="unavailable-end">{{ reservation.end_date|date('Y-m-d') }}</span>
                                 </li>
                             {% endfor %}
                         </ul>
                     {% endif %}
 
                     <!-- Reservation Form -->
-                    <h2 class="h4 text-black mt-4">Reserve This Car</h2>
+                  {% if is_granted('ROLE_VOYAGEUR') or is_granted('ROLE_HOTE') %}
+
+                    <h2 class="h4 text-black mt-4">Réserver cette voiture </h2>
                     <form id="reservation-form">
                         <div class="form-group">
-                            <label for="start_date">Start Date</label>
+                            <label for="start_date">Date début</label>
                             <input type="date" id="start_date" name="start_date" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="end_date">End Date</label>
+                            <label for="end_date">Date fin</label>
                             <input type="date" id="end_date" name="end_date" class="form-control" required>
                         </div>
-                        <button type="submit" id="reserve-btn" class="btn btn-primary mt-3">Reserve</button>
+                        <button type="submit" id="reserve-btn" class="btn btn-primary mt-3">Réserver</button>
                     </form>
+
+                    <button id="download-invoice" class="btn btn-success mt-3" style="display: none;">
+    Télécharger la facture
+</button>
+{% endif %}
+
                     
                 </div>
             </div>
@@ -61,8 +69,11 @@
 
 <a href="{{ path('app_transport_index') }}" class="btn btn-secondary">Back to List</a>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    const { jsPDF } = window.jspdf;
+
     const reservations = [];
     document.querySelectorAll("#unavailability-list li").forEach(item => {
         const start = new Date(item.querySelector(".unavailable-start").innerText);
@@ -73,6 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const startDateInput = document.getElementById("start_date");
     const endDateInput = document.getElementById("end_date");
     const reserveBtn = document.getElementById("reserve-btn");
+    const downloadBtn = document.getElementById("download-invoice");
     const messageDiv = document.createElement("div"); 
     messageDiv.style.color = "red";
     messageDiv.style.marginTop = "10px";
@@ -107,10 +119,10 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault();
         if (reserveBtn.disabled) return;
 
-        const transportId = "{{ transport.id }}"; // Get the transport ID dynamically
+        const transportId = "{{ transport.id }}";
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
-        
+
         fetch("{{ path('app_reservation_transport_new_res') }}", {
             method: "POST",
             headers: {
@@ -118,23 +130,76 @@ document.addEventListener("DOMContentLoaded", function () {
                 "X-CSRF-Token": "{{ csrf_token('create_reservation') }}"
             },
             body: JSON.stringify({
-                user_id: 1,  // Hardcoded user ID
+                user_id: 1,  // Replace with actual user ID logic
                 transport_id: transportId,
                 start_date: startDate,
                 end_date: endDate,
                 statut: "confirmed"
             })
-        }).then(response => {
-            if (response.ok) {
-                alert("Reservation successful!");
-                window.location.reload();
+        }).then(response => response.json())
+        .then(data => {
+            if (data.message === "Reservation created successfully") {
+                alert("Réussi! Votre réservation a été créée avec succès.");
+
+                // Show the "Download Invoice" button
+                downloadBtn.style.display = "block";
+
+                // Append the new reservation to the unavailability list
+                const unavailabilityList = document.getElementById("unavailability-list");
+                if (!unavailabilityList) return;
+
+                const newItem = document.createElement("li");
+                newItem.classList.add("list-group-item");
+                newItem.innerHTML = `De <span class="unavailable-start">${startDate}</span>
+                                    à <span class="unavailable-end">${endDate}</span>`;
+                unavailabilityList.appendChild(newItem);
+
+                // Update reservations array to prevent new conflicts
+                reservations.push({ 
+                    start: new Date(startDate), 
+                    end: new Date(endDate) 
+                });
+
+                // Clear form fields
+                startDateInput.value = "";
+                endDateInput.value = "";
             } else {
                 alert("Error creating reservation.");
             }
         }).catch(error => console.error("Error:", error));
     });
+
+    // Generate the PDF invoice when clicking "Download Invoice"
+    downloadBtn.addEventListener("click", function () {
+        const pdf = new jsPDF();
+
+        // Reservation details
+        const userName = "John Doe"; // Replace with actual user name logic
+        const transportType = "{{ transport.type }}";
+        const price = "{{ transport.prix }} DT";
+        const startDate = startDateInput.value || "N/A";
+        const endDate = endDateInput.value || "N/A";
+
+        pdf.setFontSize(22);
+        pdf.text("Facture de réservation de transport", 20, 20);
+        pdf.setFontSize(12);
+        pdf.text(`Customer: ${userName}`, 20, 40);
+        pdf.text(`Transport Type: ${transportType}`, 20, 50);
+        pdf.text(`Date début: ${startDate.toString()}`, 20, 60);
+        pdf.text(`Date fin: ${endDate.toString()}`, 20, 70);
+        pdf.text(`Price: ${price}`, 20, 80);
+        pdf.text(`Status: Confirmed`, 20, 90);
+
+        // Footer
+        pdf.setFontSize(10);
+        pdf.text("Thank you for choosing our transport service!", 20, 110);
+
+        // Save and download
+        pdf.save("invoice.pdf");
+    });
 });
 </script>
+
 
 
 {% endblock %}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation Invoice</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 80%; margin: auto; padding: 20px; border: 1px solid #ddd; }
+        h1, h2 { text-align: center; }
+        .details { margin-bottom: 20px; }
+        .details p { margin: 5px 0; }
+        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Transport Reservation Invoice</h1>
+        <hr>
+        <div class="details">
+            <p><strong>Reservation ID:</strong> {{ reservation.id }}</p>
+            <p><strong>Customer Name:</strong> {{ reservation.getUserId().getUsername() }}</p>
+            <p><strong>Transport Type:</strong> {{ reservation.getTransportId().getType() }}</p>
+            <p><strong>Start Date:</strong> {{ reservation.getStartDate()|date('Y-m-d') }}</p>
+            <p><strong>End Date:</strong> {{ reservation.getEndDate()|date('Y-m-d') }}</p>
+            <p><strong>Price:</strong> {{ reservation.getTransportId().getPrix() }} DT</p>
+            <p><strong>Status:</strong> {{ reservation.getStatut() }}</p>
+        </div>
+        <hr>
+        <div class="footer">
+            <p>Thank you for choosing our transport service!</p>
+        </div>
+    </div>
+</body>
+</html>

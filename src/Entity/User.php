@@ -1,156 +1,83 @@
 <?php
-
+// src/Entity/User.php
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
-#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_ID', fields: ['id'])]
-// class User implements UserInterface, PasswordAuthenticatedUserInterface
-class User implements  PasswordAuthenticatedUserInterface
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    /**
-     * @var list<string> The user roles
-     */
-    // #[ORM\Column]
-    // private array $roles = [];
-
-    /**
-     * @var string The hashed password
-     */
-    #[ORM\Column]
-    private ?string $password = null;
-
-    //email column
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message: "L'email est obligatoire.")]
+    #[Assert\Email(message: "L'email '{{ value }}' n'est pas valide.")]
     private ?string $email = null;
 
-    /**
-     * @var Collection<int, ReservationTransport>
-     */
-    #[ORM\OneToMany(targetEntity: ReservationTransport::class, mappedBy: 'user_id')]
-    private Collection $reservationTransports;
+    #[ORM\Column(type: 'json')]
+    private array $roles = [];
 
+    #[ORM\Column]
+    #[Assert\NotBlank(message: "Le mot de passe est obligatoire.")]
+    #[Assert\Length(min: 8, minMessage: "Le mot de passe doit contenir au moins {{ limit }} caractères.")]
+    private ?string $password = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50, maxMessage: "Le nom d'utilisateur ne doit pas dépasser {{ limit }} caractères.")]
+    private ?string $username = null;
 
+    // // Définition de la relation OneToMany avec EvaluationReclamation
+    // #[ORM\OneToMany(mappedBy: 'user', targetEntity: EvaluationReclamation::class)]
+    // private Collection $evaluations;
 
     public function __construct()
     {
-        $this->reservationTransports = new ArrayCollection();
+        // Initialiser la collection d'évaluations
+        $this->evaluations = new ArrayCollection();
     }
 
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
-    public function getUserIdentifier(): string
-    {
-        return (string) $this->id;
-    }
-
-    // /**
-    //  * @see UserInterface
-    //  *
-    //  * @return list<string>
-    //  */
-    // public function getRoles(): array
+    // Getter et Setter pour evaluations
+    // public function getEvaluations(): Collection
     // {
-    //     $roles = $this->roles;
-    //     // guarantee every user at least has ROLE_USER
-    //     $roles[] = 'ROLE_USER';
-
-    //     return array_unique($roles);
+    //     return $this->evaluations;
     // }
 
-    // /**
-    //  * @param list<string> $roles
-    //  */
-    // public function setRoles(array $roles): static
+    // public function addEvaluation(EvaluationReclamation $evaluation): self
     // {
-    //     $this->roles = $roles;
+    //     if (!$this->evaluations->contains($evaluation)) {
+    //         $this->evaluations[] = $evaluation;
+    //         $evaluation->setUser($this);
+    //     }
 
     //     return $this;
     // }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
-    public function getPassword(): ?string
+    // public function removeEvaluation(EvaluationReclamation $evaluation): self
+    // {
+    //     if ($this->evaluations->removeElement($evaluation)) {
+    //         // On met à null la relation dans EvaluationReclamation
+    //         if ($evaluation->getUser() === $this) {
+    //             $evaluation->setUser(null);
+    //         }
+    //     }
+
+    //     return $this;
+    // }
+
+    public function getId(): ?int
     {
-        return $this->password;
+        return $this->id;
     }
-
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials(): void
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
-    }
-
-    /**
-     * @return Collection<int, ReservationTransport>
-     */
-    public function getReservationTransports(): Collection
-    {
-        return $this->reservationTransports;
-    }
-
-    public function addReservationTransport(ReservationTransport $reservationTransport): static
-    {
-        if (!$this->reservationTransports->contains($reservationTransport)) {
-            $this->reservationTransports->add($reservationTransport);
-            $reservationTransport->setUserId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReservationTransport(ReservationTransport $reservationTransport): static
-    {
-        if ($this->reservationTransports->removeElement($reservationTransport)) {
-            // set the owning side to null (unless already changed)
-            if ($reservationTransport->getUserId() === $this) {
-                $reservationTransport->setUserId(null);
-            }
-        }
-
-        return $this;
-    }
-
-
 
     public function getEmail(): ?string
     {
@@ -160,7 +87,58 @@ class User implements  PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
+        return $this;
+    }
 
+    public function getUserIdentifier(): string
+    {
+        return $this->email ?? '';
+    }
+
+    public function getRoles(): array
+    {
+        // Ajoute automatiquement "ROLE_USER" s'il n'est pas déjà présent
+        $roles = $this->roles;
+        if (!in_array('ROLE_USER', $roles, true)) {
+            $roles[] = 'ROLE_USER';
+        }
+        return $roles;
+    }
+
+    public function setRoles(array $roles): static
+    {
+        // Assure que tous les rôles commencent par "ROLE_"
+        $this->roles = array_unique(array_map(
+            fn($role) => str_starts_with($role, 'ROLE_') ? $role : 'ROLE_' . strtoupper($role),
+            $roles
+        ));
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // Si besoin, on peut ajouter ici un nettoyage des données sensibles
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(?string $username): static
+    {
+        $this->username = $username;
         return $this;
     }
 }

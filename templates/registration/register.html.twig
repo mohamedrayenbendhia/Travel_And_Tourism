@@ -1,0 +1,115 @@
+
+
+{% block body %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .signup-container {
+        background: #fff;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        width: 380px;
+        text-align: center;
+    }
+    .signup-container h2 {
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: 600;
+    }
+    .signup-container input, .signup-container select {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    .signup-container input:focus, .signup-container select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 8px rgba(102, 126, 234, 0.5);
+    }
+    .signup-container button {
+        width: 100%;
+        padding: 12px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    .signup-container button:hover {
+        background: #5a67d8;
+    }
+    .terms {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+    .terms label {
+        margin-left: 8px;
+    }
+    .login-link {
+        text-align: center;
+        font-size: 14px;
+    }
+    .login-link a {
+        text-decoration: none;
+        color: #667eea;
+        font-weight: 500;
+    }
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="signup-container">
+    <h2>Sign Up</h2>
+
+        {{ form_start(registrationForm) }}
+        {{ form_row(registrationForm.username) }}
+        {{ form_row(registrationForm.email) }}
+        {{ form_row(registrationForm.password.first) }}
+        {{ form_row(registrationForm.password.second) }}
+        
+        {# Custom Role Selection #}
+        <div>
+            <label for="role">Role</label>
+            <select id="role" name="role">
+                <option value="voyageur">Voyageur</option>
+                <option value="hote">Hôte</option>
+                <option value="transporteur">Transpoteur</option>
+                <option value="restaurant">Restaurant></option>
+            </select>
+        </div>
+
+        {# Terms and Conditions Checkbox #}
+        <div style="text-align: left; margin-bottom: 15px;">
+    <label style="display: inline-block;">
+        <input type="checkbox" required style="vertical-align: left;"> I agree to the Terms and Conditions
+    </label>
+</div>
+
+
+       
+    {{ form_end(registrationForm) }}
+
+    <div class="login-link">
+        <p>Already have an account? <a href="{{ path('app_login') }}">Login</a></p>
+    </div>
+</div>
+
+{% endblock %}

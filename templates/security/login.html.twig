@@ -1,0 +1,135 @@
+{% block head %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .login-container {
+        background: #fff;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        width: 380px;
+        text-align: center;
+    }
+    .login-container h2 {
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: 600;
+    }
+    .login-container input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    .login-container input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 8px rgba(102, 126, 234, 0.5);
+    }
+    .login-container button {
+        width: 100%;
+        padding: 12px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    .login-container button:hover {
+        background: #5a67d8;
+    }
+    .remember-me {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+    .forgot-password a {
+        text-decoration: none;
+        color: #667eea;
+        font-weight: 500;
+    }
+    .forgot-password a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<form method="post" autocomplete="off">  <!-- Disable autocomplete for the entire form -->
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+    {% endif %}
+
+    {% if app.user %}
+        <div class="mb-3">
+            You are logged in as {{ app.user.userIdentifier }},
+            <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% endif %}
+
+    <li class="nav-item {{ home_active | default('') }}">
+        <a class="nav-link" href="{{ path('app_homepage') }}" 
+           style="padding: 12px 25px; font-size: 16px; background-color: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; transition: background-color 0.3s;">
+            &lt; Back Home
+        </a>
+    </li>
+
+    <div class="login-container">
+        <h2>Login</h2>
+    
+        {# Symfony Form with CSRF Protection #}
+        <form method="post" autocomplete="off">  <!-- Disable autocomplete for the inner form -->
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <input type="text" name="email" placeholder="Username" autocomplete="off" required>  <!-- Disable autocomplete for the username -->
+            {# Afficher l'erreur si le champ 'email' est invalide #}
+            {% if app.request.get('email') is not empty and app.session.flashbag.has('error') %}
+                <div class="alert alert-danger">
+                    {{ app.session.flashbag.get('error')[0] }}
+                </div>
+            {% endif %}
+
+            <input type="password" name="password" placeholder="Password" autocomplete="new-password" required>  <!-- Disable autocomplete for the password -->
+            {# Afficher l'erreur si le champ 'password' est invalide #}
+            {% if app.request.get('password') is not empty and app.session.flashbag.has('error') %}
+                <div class="alert alert-danger">
+                    {{ app.session.flashbag.get('error')[0] }}
+                </div>
+            {% endif %}
+
+            <div class="remember-me">
+                <label>
+                    <input type="checkbox" name="_remember_me"> Remember me
+                </label>
+                <span class="forgot-password">
+                    <a href="#">Forgot password?</a>
+                </span>
+            </div>
+
+            <button type="submit">Login</button>
+
+            <div class="signup-link">
+                <p>You don't have an account? <a href="{{ path('app_register') }}">Sign up</a></p>
+            </div>
+        </form>
+    </div>
+</form>
+{% endblock %}

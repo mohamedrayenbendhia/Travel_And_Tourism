@@ -4,25 +4,28 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    {{ parent() }}
+
     <style>
+
         /* General Page Styling */
-        body {
+        {# body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f7fc;
             color: #343a40;
             margin: 0;
             padding: 20px;
-        }
+        } #}
 
         /* Form Container */
-        .container {
+        {# .container {
             max-width: 700px;
             margin: 50px auto;
             background: #ffffff;
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-        }
+        } #}
 
         h1 {
             text-align: center;
@@ -31,12 +34,12 @@
             margin-bottom: 20px;
             color: #007bff;
         }
-
+{# 
         .form-container {
             display: flex;
             flex-direction: column;
             gap: 15px;
-        }
+        } #}
 
         /* Labels & Inputs */
         label {
@@ -89,22 +92,6 @@
         }
 
         /* Submit Button */
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
 
         /* Back Button */
         .btn-secondary {
@@ -127,7 +114,7 @@
         }
 
         /* Responsive Design */
-        @media (max-width: 768px) {
+        {# @media (max-width: 768px) {
             .container {
                 width: 90%;
                 padding: 15px;
@@ -136,13 +123,27 @@
             .location-inputs {
                 flex-direction: column;
             }
-        }
+        } #}
     </style>
 {% endblock %}
 
 {% block body %}
-<div class="container">
-    <h1>Create New Restaurant</h1>
+<div class="site-blocks-cover inner-page-cover overlay" style="background-image: url({{ asset('assets/images/Cover-Resto.jpg') }});">
+    <div class="container">
+        <div class="row align-items-center justify-content-center text-center">
+            <div class="col-md-10">
+                <h1 class="mb-2">
+                    Créer un nouveau restaurant
+                </h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container  pt-4  mb-4 pb-4 py-2 border shadow"
+    style="margin-top: 20px;"
+>
 
    <div class="form-container">
     {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
@@ -160,12 +161,14 @@
 
         {{ form_row(form.prix) }}
         {{ form_row(form.description) }}
-        {{ form_row(form.imageFile) }}
+        {{ form_row(form.imageFile) }} {# Required Image #}
+        {{ form_row(form.imageFile1) }} {# Optional Image #}
+        {{ form_row(form.imageFile2) }} {# Optional Image #}
         {{ form_row(form.localisation) }}
 
         {{ form_rest(form) }} {# This ensures other fields are  included without duplication #}
 
-        <button class="btn btn-primary">Save</button>
+        <button class="btn btn-primary mt-2">Save</button>
     {{ form_end(form, {'render_rest': false}) }} {# Prevents automatic rendering of missing fields #}
 </div>
 
@@ -198,8 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         marker = L.marker(e.latlng).addTo(map)
-            .bindPopup("Restaurant Location Selected")
-            .openPopup();
+            .bindPopup("Localisation du restaurant").openPopup();
 
         // Update form fields with selected coordinates
         latField.value = e.latlng.lat.toFixed(6);

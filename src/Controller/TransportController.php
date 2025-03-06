@@ -22,33 +22,57 @@ final class TransportController extends AbstractController
     #[Route(name: 'app_transport_index', methods: ['GET'])]
     public function index(TransportRepository $transportRepository, Request $request, ReservationTransportRepository $reservationTransportRepository): Response
     {
-        $isAdmin = $request->query->has('a');
-
+        $user = $this->getUser();
         $type = $request->query->get('type', '');
-
-
-        $transports = $transportRepository->searchTransports($type);
-
-        //loop over the transports and check if they are available or not and add an attribute to the transport object is available with the current date
-        foreach ($transports as $transport) {
-            $transport->isAvailable = $reservationTransportRepository->getTransportAvailabilityForCurrentDate($transport->getId()) ? false : true;
+    
+        if ($this->isGranted('ROLE_ADMIN')) {
+            // Admins can see all transports
+            $transports = $transportRepository->searchTransports($type);
+        } elseif ($this->isGranted('ROLE_TRANSPORTEUR')) {
+            // Transport owners only see their own transports
+            $transports = $transportRepository->findBy(['user' => $user]);
+        } else {
+            // Public users can see all transports but cannot manage them
+            $transports = $transportRepository->searchTransports($type);
         }
-        
-
+    
+        // Check availability and set a flag for each transport
+        foreach ($transports as $transport) {
+            $transport->isAvailable = !$reservationTransportRepository->getTransportAvailabilityForCurrentDate($transport->getId());
+        }
+    
         return $this->render('transport/index.html.twig', [
-            'transports' => $transports,
-            'isAdmin' => $isAdmin,
+            'transports' => $transports
         ]);
     }
+    
 
     #[Route('/new', name: 'app_transport_new', methods: ['GET', 'POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
 {
+    $user = $this->getUser(); // Get the currently logged-in user
+
+    if (!$user || !in_array('ROLE_TRANSPORTEUR', $user->getRoles(), true)) {
+        $this->addFlash('error', 'Vous devez être un transporteur pour ajouter un transport.');
+        return $this->redirectToRoute('app_transport_index');
+    }
+
     $transport = new Transport();
+    $transport->setUser($user); // Assign the transport to the logged-in user
+
     $form = $this->createForm(TransportType::class, $transport);
     $form->handleRequest($request);
 
+    // if ($form->isSubmitted()){
+    //     // dd($form->isValid());
+    //     //dump the errors
+    //     dd($form->getErrors(true));
+    // }
+
     if ($form->isSubmitted() && $form->isValid()) {
+
+        // dd($form->getData());
+        // Handle main image upload
         $imageFile = $form->get('imageFile')->getData();
         if ($imageFile) {
             $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
@@ -57,7 +81,7 @@ public function new(Request $request, EntityManagerInterface $entityManager, Slu
 
             try {
                 $imageFile->move(
-                    $this->getParameter('transport_images_directory'), // Assure-toi que ce paramètre est bien défini dans `services.yaml`
+                    $this->getParameter('transport_images_directory'), // Ensure this is defined in `services.yaml`
                     $newFilename
                 );
                 $transport->setImage($newFilename);
@@ -69,7 +93,8 @@ public function new(Request $request, EntityManagerInterface $entityManager, Slu
         $entityManager->persist($transport);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_transport_index', [], Response::HTTP_SEE_OTHER);
+        $this->addFlash('success', 'Transport ajouté avec succès!');
+        return $this->redirectToRoute('app_transport_index');
     }
 
     return $this->render('transport/new.html.twig', [
@@ -77,6 +102,7 @@ public function new(Request $request, EntityManagerInterface $entityManager, Slu
         'form' => $form,
     ]);
 }
+
 
     // #[Route('/{id}', name: 'app_transport_show', methods: ['GET'])]
     // public function show(Transport $transport, Request $request): Response
@@ -102,31 +128,53 @@ public function new(Request $request, EntityManagerInterface $entityManager, Slu
     }
 
     #[Route('/{id}/edit', name: 'app_transport_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Transport $transport, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(TransportType::class, $transport);
-        $form->handleRequest($request);
+public function edit(Request $request, Transport $transport, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+{
+    $user = $this->getUser();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_transport_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('transport/edit.html.twig', [
-            'transport' => $transport,
-            'form' => $form,
-        ]);
+    // Restrict access: only the transport owner or an admin can edit
+    if (!$this->isGranted('ROLE_ADMIN') && $transport->getUser() !== $user) {
+        $this->addFlash('error', 'Vous n\'avez pas la permission de modifier ce transport.');
+        return $this->redirectToRoute('app_transport_index');
     }
+
+    $form = $this->createForm(TransportType::class, $transport);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_transport_index');
+    }
+
+    return $this->render('transport/edit.html.twig', [
+        'transport' => $transport,
+        'form' => $form,
+    ]);
+}
+
+
 
     #[Route('/{id}', name: 'app_transport_delete', methods: ['POST'])]
     public function delete(Request $request, Transport $transport, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$transport->getId(), $request->getPayload()->getString('_token'))) {
+        $user = $this->getUser();
+    
+        // Ensure only the owner or an admin can delete
+        if (!$this->isGranted('ROLE_ADMIN') && $transport->getUser() !== $user) {
+            $this->addFlash('error', 'Vous n\'avez pas la permission de supprimer ce transport.');
+            return $this->redirectToRoute('app_transport_index');
+        }
+    
+        if ($this->isCsrfTokenValid('delete' . $transport->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($transport);
             $entityManager->flush();
+            $this->addFlash('success', 'Transport supprimé avec succès.');
+        } else {
+            $this->addFlash('error', 'Jeton CSRF invalide.');
         }
-
-        return $this->redirectToRoute('app_transport_index', [], Response::HTTP_SEE_OTHER);
+    
+        return $this->redirectToRoute('app_transport_index');
     }
+    
 }
