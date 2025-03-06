@@ -53,7 +53,8 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         } elseif (in_array('ROLE_HOTE', $roles)) { // Correction ici
             return new RedirectResponse($this->urlGenerator->generate('nos_vlog'));
         } elseif (in_array('ROLE_VOYAGEUR', $roles)) { // Correction ici
-            return new RedirectResponse($this->urlGenerator->generate('nos_vlog'));
+            // return new RedirectResponse($this->urlGenerator->generate('nos_vlog'));
+            return new RedirectResponse($this->urlGenerator->generate('app_home'));
         }elseif (in_array('ROLE_TRANSPORTEUR', $roles)) { // Correction ici
             return new RedirectResponse($this->urlGenerator->generate('app_transport_index'));
         } elseif (in_array('ROLE_RESTAURANT', $roles)) { // Correction ici
