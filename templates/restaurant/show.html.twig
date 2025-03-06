@@ -315,7 +315,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 restaurant_id: {{ restaurant.id }},
                 date_commande: document.getElementById("date_commande").value,
                 statut: document.getElementById("statut").value,
-                user_id: {{ app.user.id }}
+                user_id: "{% if app.user %} {{ app.user.id }} {% else %} 0 {% endif %}",
             })
         }).then(response => {
             if (response.ok) {
