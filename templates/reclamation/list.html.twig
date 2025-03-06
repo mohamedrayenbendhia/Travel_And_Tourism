@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des réclamations{% endblock %}
+
+{% block body %}
+    <h1>Liste des réclamations</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Auteur</th>
+                <th>Cible</th>
+                <th>Statut</th>
+                <th>Date de soumission</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reclamation in reclamations %}
+                <tr>
+                    <td>{{ reclamation.titre }}</td>
+                    <td>{{ reclamation.auteur.email }}</td>
+                    <td>{{ reclamation.cible.email }}</td>
+                    <td>{{ reclamation.statut }}</td>
+                    <td>{{ reclamation.dateSoumission|date('Y-m-d H:i:s') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

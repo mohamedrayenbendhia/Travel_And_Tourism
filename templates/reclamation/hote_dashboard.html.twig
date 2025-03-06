@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Réclamations{% endblock %}
+
+{% block body %}
+    <h1>Mes Réclamations</h1>
+
+    {% if reclamations is empty %}
+        <p>Aucune réclamation pour le moment.</p>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Description</th>
+                    <th>Statut</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reclamation in reclamations %}
+                    <tr>
+                        <td>{{ reclamation.id }}</td>
+                        <td>{{ reclamation.description }}</td>
+                        <td>{{ reclamation.statut }}</td>
+                        <td>
+                            {% if reclamation.statut != 'Résolue' %}
+                                <a href="{{ path('reclamation_repondre', { id: reclamation.id }) }}" class="btn btn-primary">Répondre</a>
+                            {% else %}
+                                <span class="text-success">Résolue</span>
+                            {% endif %}
+                            
+                        </td>
+                   
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

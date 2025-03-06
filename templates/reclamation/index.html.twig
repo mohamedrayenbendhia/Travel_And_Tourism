@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle réclamation{% endblock %}
+
+{% block body %}
+    <h1>Créer une nouvelle réclamation</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.destinataire) }}
+        {{ form_row(form.statut) }}
+        {{ form_row(form.message) }}
+        <button type="submit">Envoyer</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('reclamation_index') }}">Retour à la liste des réclamations</a>
+{% endblock %}

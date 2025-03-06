@@ -1,0 +1,111 @@
+{# templates/reclamation/voir.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la réclamation{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* Style général */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #333;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .reclamation-details {
+            background-color: #fff;
+            padding: 30px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .reclamation-details p {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .reclamation-details strong {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .statut {
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .statut-résolue {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .statut-en-attente {
+            background-color: #FFC107;
+            color: white;
+        }
+
+        .statut-evaluée {
+            background-color: #FF5722;
+            color: white;
+        }
+
+        .statut-non-évaluée {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-back {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .btn-back:hover {
+            background-color: #45a049;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="reclamation-details">
+        <h1>Détails de la réclamation</h1>
+        <p><strong>Titre :</strong> {{ reclamation.titre }}</p>
+        <p><strong>Description :</strong> {{ reclamation.description }}</p>
+        <p><strong>Catégorie :</strong> {{ reclamation.categorie }}</p>
+        <p><strong>Statut :</strong>
+            {% if reclamation.statut == 'résolue' %}
+                <span class="statut statut-résolue">{{ reclamation.statut }}</span>
+            {% elseif reclamation.statut == 'en attente' %}
+                <span class="statut statut-en-attente">{{ reclamation.statut }}</span>
+            {% elseif reclamation.statut == 'évaluée' %}
+                <span class="statut statut-evaluée">{{ reclamation.statut }}</span>
+            {% else %}
+                <span class="statut statut-non-évaluée">{{ reclamation.statut }}</span>
+            {% endif %}
+        </p>
+        <p><strong>Date de soumission :</strong> {{ reclamation.dateSoumission|date('d/m/Y H:i') }}</p>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{# templates/reclamation/admin_reclamations.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des réclamations{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>Gestion des Réclamations</h1>
+
+        {# Affichage des messages flash #}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Utilisateur</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reclamation in reclamations %}
+                    <tr>
+                        <td>{{ reclamation.id }}</td>
+                        <td>{{ reclamation.user.username }}</td>
+                        <td>{{ reclamation.statut }}</td>
+                        <td>
+                            {# Lien vers les détails de la réclamation #}
+                            <a href="{{ path('app_reclamationsvoiradmin', {'id': reclamation.id}) }}" class="btn btn-info">Voir détails</a>
+
+                            {# Bouton pour supprimer la réclamation #}
+                            <a href="{{ path('admin_reclamation_delete', {'id': reclamation.id}) }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?');">
+                                Supprimer
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

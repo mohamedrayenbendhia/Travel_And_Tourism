@@ -1,0 +1,15 @@
+{# templates/admin/user/profile.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil Utilisateur{% endblock %}
+
+{% block body %}
+<h1>Profil de {{ user.username }}</h1>
+
+<p>Email: {{ user.email }}</p>
+<p>Rôles: {{ user.roles|join(', ') }}</p>
+
+<!-- Vous pouvez ajouter plus de détails ou un formulaire pour modifier le profil -->
+
+{% endblock %}

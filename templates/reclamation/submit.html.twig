@@ -1,0 +1,171 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Soumettre une Réclamation{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .luxury-form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .luxury-form-group {
+            margin-bottom: 20px;
+        }
+
+        .luxury-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .luxury-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .luxury-input:focus {
+            border-color: #a87e5a;
+            box-shadow: 0 0 8px rgba(168, 126, 90, 0.5);
+        }
+
+        .luxury-error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .luxury-btn-submit {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #a87e5a, #8d6649);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .luxury-btn-submit:hover {
+            background: linear-gradient(135deg, #8d6649, #a87e5a);
+        }
+
+        .luxury-btn-secondary {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #a87e5a;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .luxury-btn-secondary:hover {
+            color: #8d6649;
+            text-decoration: underline;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="luxury-form-container">
+        <h1 class="form-title">Soumettre une Réclamation</h1>
+
+        {# Affichage des messages flash pour confirmation #}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+            <div class="luxury-form-group">
+                {{ form_label(form.titre, null, {'label_attr': {'class': 'luxury-label'}}) }}
+                {{ form_widget(form.titre, {
+                    'attr': {
+                        'class': 'luxury-input',
+                        'required': 'required',
+                        'maxlength': 255
+                    }
+                }) }}
+                {{ form_errors(form.titre) }}
+            </div>
+
+            <div class="luxury-form-group">
+                {{ form_label(form.description, null, {'label_attr': {'class': 'luxury-label'}}) }}
+                {{ form_widget(form.description, {
+                    'attr': {
+                        'class': 'luxury-input',
+                        'required': 'required'
+                    }
+                }) }}
+                {{ form_errors(form.description) }}
+            </div>
+
+            <div class="luxury-form-group">
+                {{ form_label(form.hote, null, {'label_attr': {'class': 'luxury-label'}}) }}
+                {{ form_widget(form.hote, {
+                    'attr': {
+                        'class': 'luxury-input',
+                        'required': 'required'
+                    }
+                }) }}
+                {{ form_errors(form.hote) }}
+            </div>
+
+            <div class="luxury-form-group">
+                {{ form_label(form.photo, null, {'label_attr': {'class': 'luxury-label'}}) }}
+                {{ form_widget(form.photo, {
+                    'attr': {
+                        'class': 'luxury-input',
+                        'accept': 'image/*'
+                    }
+                }) }}
+                {{ form_errors(form.photo) }}
+            </div>
+
+            <div class="luxury-form-group">
+                {{ form_label(form.document, null, {'label_attr': {'class': 'luxury-label'}}) }}
+                {{ form_widget(form.document, {
+                    'attr': {
+                        'class': 'luxury-input',
+                        'accept': '.pdf'
+                    }
+                }) }}
+                {{ form_errors(form.document) }}
+            </div>
+
+            <button type="submit" class="luxury-btn-submit">Soumettre</button>
+        {{ form_end(form) }}
+
+        <a href="{{ path('app_homepage') }}" class="luxury-btn-secondary">Retour à l'accueil</a>
+    </div>
+{% endblock %}

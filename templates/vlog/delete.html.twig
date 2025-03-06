@@ -1,0 +1,21 @@
+{% extends 'page/index.html.twig' %}
+
+{% block body %}
+<div class="site-wrap">
+    <div class="site-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="mb-4">Êtes-vous sûr de vouloir supprimer ce Vlog ?</h2>
+                    <p><strong>{{ vlog.content }}</strong></p>
+                    <form method="post" action="{{ path('vlog_delete', { 'id': vlog.id }) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ vlog.id) }}">
+                        <button class="btn btn-danger" type="submit">Supprimer</button>
+                        <a href="{{ path('vlog_index') }}" class="btn btn-secondary">Annuler</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,175 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <style>
+        /* Conteneur principal */
+        .site-wrap {
+            padding-top: 50px;
+            background-color: #f5f5f5;
+        }
+
+        .site-section {
+            padding: 50px 0;
+            background-color: #ffffff;
+        }
+
+      
+
+
+        /* Effet au survol */
+        .col-md-6:hover, .col-lg-4:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Image */
+        .col-md-6 .img-fluid {
+            border-radius: 20px;
+            width: 100%;
+            height: auto;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .col-md-6:hover .img-fluid {
+            transform: scale(1.05);
+            opacity: 0.85;
+        }
+
+        /* Section contenant le texte */
+        .p-4 {
+            padding: 30px;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            z-index: 2;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Changement de couleur de fond lors du survol */
+        .col-md-6:hover .p-4 {
+            background-color: #f8f8f8;
+        }
+
+        /* Date et auteur */
+        .p-4 span {
+            font-size: 14px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .p-4 p {
+            font-size: 16px;
+            color: #555;
+            margin-top: 15px;
+            text-align: justify;
+        }
+
+        /* Vidéo */
+        video {
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            width: 100%;
+        }
+
+        .col-md-6:hover video {
+            transform: scale(1.05);
+        }
+
+        /* Bouton "Voir plus" */
+        .btn-primary {
+            background: linear-gradient(135deg, #b38e68, #9c7a55);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #9c7a55, #b38e68);
+        }
+
+        /* Shadow effect for the button */
+        .btn-primary i {
+            margin-right: 10px;
+        }
+
+        /* Effet de zoom pour les vidéos et images */
+        video:hover,
+        .img-fluid:hover {
+            transform: scale(1.1);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="site-wrap">
+
+    <div class="site-section">
+        <div class="container">
+            <div class="row">
+                {% for vlog in vlogs %}
+                    <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up">
+                        <a href="{{ path('vlog_show', {'id': vlog.id}) }}">
+                            <!-- Affichage de l'image -->
+                            {% if vlog.image %}
+                                <div class="mb-4">
+                                    <img src="{{ asset('uploads/images/vlogs/' ~ vlog.image) }}" alt="Image" class="img-fluid">
+                                </div>
+                            {% endif %}
+                        </a>
+                        <div class="p-4 bg-white">
+                            <span class="d-block text-secondary small text-uppercase">{{ vlog.createdAt|date("M d, Y") }}</span>
+                            <!-- Affichage du nom de l'auteur -->
+                            <span class="d-block text-secondary small text-uppercase">Publié par : {{ vlog.author.username }}</span>
+                            <p>{{ vlog.content|slice(0, 100) }}...</p> <!-- Affiche un extrait du contenu -->
+                            {% if vlog.video %}
+                                <video width="100%" controls>
+                                    <source src="{{ asset('uploads/vlogs/' ~ vlog.video) }}" type="video/mp4">
+                                    Votre navigateur ne supporte pas la lecture de vidéos.
+                                </video>
+                            {% endif %}
+                            <div class="mt-3">
+                                <!-- Voir plus -->
+                                <a href="{{ path('vlog_show', {'id': vlog.id}) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i> Voir plus
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        // Ajout de l'effet de zoom pour les images
+        document.querySelectorAll('.img-fluid').forEach(function(img) {
+            img.addEventListener('mouseover', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            img.addEventListener('mouseout', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+        // Ajout de l'effet de zoom pour les vidéos
+        document.querySelectorAll('video').forEach(function(video) {
+            video.addEventListener('mouseover', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            video.addEventListener('mouseout', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+{% endblock %}

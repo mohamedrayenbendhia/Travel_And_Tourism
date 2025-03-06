@@ -1,0 +1,37 @@
+{# templates/reclamation/liste_cible.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Réclamations envoyées à {{ cible.email }}{% endblock %}
+
+{% block body %}
+    <h1>Réclamations envoyées à {{ cible.email }}</h1>
+
+    {% if reclamations is empty %}
+        <p>Aucune réclamation trouvée pour cet utilisateur.</p>
+    {% else %}
+        <ul>
+            {% for reclamation in reclamations %}
+                <li>
+                    <strong>{{ reclamation.titre }}</strong><br>
+                    <em>Statut: {{ reclamation.statut }}</em><br>
+                    <p>{{ reclamation.description }}</p>
+                    <small>Soumis le {{ reclamation.dateSoumission|date('d/m/Y H:i') }}</small>
+
+                
+
+                    {# Formulaire pour changer le statut de la réclamation #}
+                    <form action="{{ path('reclamation_changer_statut', {'id': reclamation.id}) }}" method="post">
+                        <label for="statut_{{ reclamation.id }}">Changer le statut</label><br>
+                        <select name="statut" id="statut_{{ reclamation.id }}">
+                            <option value="en cours" {% if reclamation.statut == 'en cours' %}selected{% endif %}>En cours</option>
+                            <option value="résolue" {% if reclamation.statut == 'résolue' %}selected{% endif %}>Résolue</option>
+                            <option value="refusée" {% if reclamation.statut == 'refusée' %}selected{% endif %}>Refusée</option>
+                        </select><br>
+                        <button type="submit">Changer le statut</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

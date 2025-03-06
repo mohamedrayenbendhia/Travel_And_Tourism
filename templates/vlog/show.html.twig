@@ -1,0 +1,135 @@
+{% extends 'page/index.html.twig' %}
+
+{% block body %}
+    <style>
+        /* Design Luxueux pour la page */
+        .site-section {
+            background: #f9f9f9;
+            padding: 50px 0;
+        }
+
+        .container {
+            max-width: 900px;
+        }
+
+        .bg-white {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .p-5 {
+            padding: 40px;
+        }
+
+        h2 {
+            font-size: 2.4rem;
+            font-weight: bold;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .lead {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 14px 22px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-secondary {
+            background-color: #8d6649;
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #9e7f61;
+        }
+
+        .img-fluid {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .img-fluid:hover {
+            transform: scale(1.05);
+        }
+
+        .video {
+            border-radius: 12px;
+            width: 100%;
+            margin-top: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-warning {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .btn i {
+            margin-right: 10px;
+        }
+    </style>
+
+    <div class="site-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div class="bg-white p-5 rounded shadow-sm">
+                        <h2 class="mb-4">{{ vlog.createdAt|date('M d, Y') }}</h2>
+                        <p class="lead">{{ vlog.content }}</p>
+
+                        {% if vlog.image %}
+                            <div class="mb-4">
+                                <img src="{{ asset('uploads/images/vlogs/' ~ vlog.image) }}" alt="Image" class="img-fluid">
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <strong>Attention!</strong> Aucune image disponible pour ce vlog.
+                            </div>
+                        {% endif %}
+
+                        {% if vlog.video %}
+                            <div class="mb-4">
+                                <video class="video" controls>
+                                    <source src="{{ asset('uploads/videos/' ~ vlog.video) }}" type="video/mp4">
+                                    Votre navigateur ne supporte pas la lecture de vidéos.
+                                </video>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <strong>Attention!</strong> Aucune vidéo disponible pour ce vlog.
+                            </div>
+                        {% endif %}
+
+                        <a href="{{ path('vlog_index') }}" class="btn btn-secondary mt-3">
+                            <i class="fas fa-arrow-left"></i> Retour à la liste des vlogs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

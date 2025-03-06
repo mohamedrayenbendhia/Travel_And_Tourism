@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la réclamation{% endblock %}
+
+{% block body %}
+    <h1>Détails de la réclamation</h1>
+
+    <ul>
+        <li><strong>Auteur:</strong> {{ reclamation.auteur.username }}</li>
+        <li><strong>Destinataire:</strong> {{ reclamation.destinataire ? reclamation.destinataire.username : 'Aucun' }}</li>
+        <li><strong>Statut:</strong> {{ reclamation.statut }}</li>
+        <li><strong>Message:</strong> {{ reclamation.message }}</li>
+    </ul>
+
+    <a href="{{ path('reclamation_index') }}">Retour à la liste des réclamations</a>
+    <a href="{{ path('reclamation_edit', {id: reclamation.id}) }}">Modifier</a>
+{% endblock %}

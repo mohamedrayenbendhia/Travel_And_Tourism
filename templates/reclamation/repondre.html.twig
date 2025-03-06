@@ -1,0 +1,15 @@
+{# templates/reclamation/repondre.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Répondre à une Réclamation{% endblock %}
+
+{% block body %}
+<h2>Répondre à la Réclamation</h2>
+
+<p><strong>Titre :</strong> {{ reclamation.titre }}</p>
+<p><strong>Description :</strong> {{ reclamation.description }}</p>
+
+<form method="post">
+    <button type="submit">Marquer comme résolue</button>
+</form>
+{% endblock %}

@@ -1,0 +1,58 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Vlogs{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Gestion des Vlogs</h1>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Auteur</th>
+                    <th>Contenu</th>
+                    <th>Image</th>
+                    <th>Vidéo</th>
+                    <th>Date de création</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vlog in vlogs %}
+                    <tr>
+                        <td>{{ vlog.id }}</td>
+                        <td>{{ vlog.author.username }}</td>
+                        <td>{{ vlog.content | slice(0, 50) }}...</td>
+                        <td>
+                            {% if vlog.image %}
+                                <img src="{{ asset(vlog.image) }}" alt="Image du vlog" width="100">
+                            {% else %}
+                                Aucune image
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if vlog.video %}
+                                <a href="{{ vlog.video }}" target="_blank">Voir vidéo</a>
+                            {% else %}
+                                Aucune vidéo
+                            {% endif %}
+                        </td>
+                        <td>{{ vlog.createdAt|date('d/m/Y H:i') }}</td>
+                        <td>
+                            <a href="{{ path('vlog_edit', {'id': vlog.id}) }}" class="btn btn-primary">Éditer</a>
+                            <a href="{{ path('vlog_delete', {'id': vlog.id}) }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce vlog ?')">Supprimer</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7">Aucun vlog trouvé.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('vlog_new') }}" class="btn btn-success">Créer un nouveau vlog</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Évaluation de la réclamation{% endblock %}
+
+{% block body %}
+    <h1>Évaluer la gestion de votre réclamation</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.note) }}
+        {{ form_row(form.commentaire) }}
+        <button type="submit" class="btn btn-primary">Envoyer l'évaluation</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('reclamation_suivi', {'id': reclamation.id}) }}" class="btn btn-secondary">Retour</a>
+{% endblock %}

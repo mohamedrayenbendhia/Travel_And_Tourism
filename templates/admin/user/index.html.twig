@@ -1,0 +1,41 @@
+{# templates/admin/user/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Utilisateurs{% endblock %}
+
+{% block body %}
+<h1>Gestion des Utilisateurs</h1>
+
+<a href="{{ path('user_create') }}" class="btn btn-success mb-3">Ajouter un utilisateur</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Rôles</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.username }}</td> {# Accédez directement à l'objet User ici #}
+            <td>{{ user.email }}</td>
+            <td>{{ user.roles|join(', ') }}</td>
+            <td>
+                <a href="{{ path('user_profile_management', {'id': user.id}) }}">Voir</a> | 
+                <a href="{{ path('user_roles_management', {'id': user.id}) }}">Modifier les Rôles</a> | 
+                <a href="{{ path('user_permissions_management', {'id': user.id}) }}">Permissions</a> |
+
+                {# Formulaire pour supprimer un utilisateur #}
+                <form action="{{ path('user_delete', {'id': user.id}) }}" method="POST" style="display:inline-block;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

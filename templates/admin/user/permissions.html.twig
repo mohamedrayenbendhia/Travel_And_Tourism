@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des permissions{% endblock %}
+
+{% block body %}
+    <h1>Permissions de l'utilisateur {{ user.username }}</h1>
+
+    <ul>
+        {% for permission in permissions %}
+            <li>{{ permission }}</li>
+        {% else %}
+            <li>Aucune permission assignée.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Ajouter des boutons ou des actions pour modifier les permissions si nécessaire -->
+{% endblock %}
