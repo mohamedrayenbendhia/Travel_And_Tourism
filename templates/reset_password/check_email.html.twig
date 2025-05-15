@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Password Reset Email Sent{% endblock %}
+
+{% block body %}
+    {# Display success messages #}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {# Display error messages #}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% if not app.flashes('success') and not app.flashes('error') %}
+        <p>
+            If an account matching your email exists, then an email was just sent that contains a link that you can use to reset your password.
+            {% if resetToken is defined %}
+                This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+            {% else %}
+                This link will expire in 1 hour.
+            {% endif %}
+        </p>
+        <p>If you don't receive an email please check your spam folder or <a href="{{ path('app_forgot_password_request') }}">try again</a>.</p>
+    {% endif %}
+{% endblock %}

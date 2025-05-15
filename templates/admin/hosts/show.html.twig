@@ -1,0 +1,109 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Détails de l'Hôte{% endblock %}
+
+{% block content %}
+    <div class="pagetitle">
+        <h1>Détails de l'Hôte</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('admin_hosts_index') }}">Hôtes</a></li>
+                <li class="breadcrumb-item active">{{ host.firstName }} {{ host.lastName }}</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section profile">
+        <div class="row">
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                        <img src="{{ asset('user/assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle">
+                        <h2>{{ host.firstName }} {{ host.lastName }}</h2>
+                        <h3>Hôte</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-body pt-3">
+                        <ul class="nav nav-tabs nav-tabs-bordered">
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Aperçu</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content pt-2">
+                            <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                                <h5 class="card-title">Détails du profil</h5>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Nom complet</div>
+                                    <div class="col-lg-9 col-md-8">{{ host.firstName }} {{ host.lastName }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Email</div>
+                                    <div class="col-lg-9 col-md-8">{{ host.email }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Statut</div>
+                                    <div class="col-lg-9 col-md-8">
+                                        {% if host.isVerified %}
+                                            <span class="badge bg-success">Vérifié</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Non vérifié</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Date d'inscription</div>
+                                    <div class="col-lg-9 col-md-8">{{ host.createdAt|date('d/m/Y') }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Propriétés de l'hôte</h5>
+                        {% if host.properties is empty %}
+                            <p>Aucune propriété enregistrée.</p>
+                        {% else %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Titre</th>
+                                        <th>Adresse</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for property in host.properties %}
+                                        <tr>
+                                            <td>{{ property.title }}</td>
+                                            <td>{{ property.address }}</td>
+                                            <td>
+                                                <span class="badge bg-success">Active</span>
+                                            </td>
+                                            <td>
+                                                <a href="#" class="btn btn-primary btn-sm">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %} 

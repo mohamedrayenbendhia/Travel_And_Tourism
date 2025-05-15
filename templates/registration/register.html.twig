@@ -1,0 +1,194 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sign Up - {% endblock %}
+
+{% block stylesheets %}
+<style>
+    .register-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 2rem 0;
+    }
+    .register-card {
+        transition: transform 0.3s ease;
+    }
+    .register-card:hover {
+        transform: translateY(-5px);
+    }
+    .card-header {
+        background: linear-gradient(45deg, #2193b0, #6dd5ed) !important;
+        border: none;
+    }
+    .form-control {
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: #2193b0;
+        box-shadow: 0 0 0 0.2rem rgba(33, 147, 176, 0.25);
+    }
+    .btn-primary {
+        background: linear-gradient(45deg, #2193b0, #6dd5ed);
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #1a7a94, #5bc4d9);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(33, 147, 176, 0.3);
+    }
+    .form-check-input:checked {
+        background-color: #2193b0;
+        border-color: #2193b0;
+    }
+    .alert {
+        border-radius: 8px;
+        border: none;
+    }
+    .text-decoration-none {
+        color: #2193b0;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .text-decoration-none:hover {
+        color: #1a7a94;
+        text-decoration: underline !important;
+    }
+    .input-group-text {
+        background: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px 0 0 8px;
+    }
+    .invalid-feedback {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="register-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg border-0 rounded-lg register-card">
+                    <div class="card-header text-white text-center py-4">
+                        <h4 class="mb-0">Create Account</h4>
+                        <p class="mb-0 text-white-50">Join our community today</p>
+                    </div>
+                    <div class="card-body p-4">
+                        {% for flash_error in app.flashes('verify_email_error') %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{ flash_error }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+
+                        {{ form_start(registrationForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                            <div class="mb-4">
+                                {{ form_label(registrationForm.username, null, {'label_attr': {'class': 'form-label'}}) }}
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    {{ form_widget(registrationForm.username, {'attr': {'class': 'form-control' ~ (registrationForm.username.vars.valid ? '' : ' is-invalid')}}) }}
+                                </div>
+                                <div class="invalid-feedback">
+                                    {{ form_errors(registrationForm.username) }}
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                {{ form_label(registrationForm.email, null, {'label_attr': {'class': 'form-label'}}) }}
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control' ~ (registrationForm.email.vars.valid ? '' : ' is-invalid')}}) }}
+                                </div>
+                                <div class="invalid-feedback">
+                                    {{ form_errors(registrationForm.email) }}
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                {{ form_label(registrationForm.plainPassword.first, 'Password', {'label_attr': {'class': 'form-label'}}) }}
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                    {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control' ~ (not registrationForm.plainPassword.first.vars.valid ? ' is-invalid')}}) }}
+                                </div>
+                                <div class="invalid-feedback">
+                                    {{ form_errors(registrationForm.plainPassword.first) }}
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                {{ form_label(registrationForm.plainPassword.second, 'Confirm Password', {'label_attr': {'class': 'form-label'}}) }}
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                    {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control' ~ (not registrationForm.plainPassword.second.vars.valid ? ' is-invalid')}}) }}
+                                </div>
+                                <div class="invalid-feedback">
+                                    {{ form_errors(registrationForm.plainPassword.second) }}
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    {{ form_widget(registrationForm.agreeTerms, {
+                                        'attr': {
+                                            'class': 'form-check-input' ~ (not registrationForm.agreeTerms.vars.valid ? ' is-invalid')
+                                        }
+                                    }) }}
+                                    {{ form_label(registrationForm.agreeTerms, null, {
+                                        'label_attr': {
+                                            'class': 'form-check-label'
+                                        }
+                                    }) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(registrationForm.agreeTerms) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-person-plus me-2"></i>Create Account
+                                </button>
+                            </div>
+                        {{ form_end(registrationForm) }}
+
+                        <div class="mt-4 text-center">
+                            <p class="mb-0">Already have an account? <a href="{{ path('app_login') }}" class="text-decoration-none">Sign in here</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Client-side validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Voyageur{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .dashboard-section {
+        padding: 4rem 0;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: calc(100vh - 80px);
+    }
+
+    .welcome-banner {
+        background: linear-gradient(45deg, #2193b0, #6dd5ed);
+        padding: 2rem;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        height: 100%;
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(45deg, #2193b0, #6dd5ed);
+    }
+
+    .card-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(45deg, rgba(33, 147, 176, 0.1), rgba(109, 213, 237, 0.1));
+    }
+
+    .card-icon i {
+        font-size: 1.8rem;
+        color: #2193b0;
+    }
+
+    .dashboard-card h3 {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .dashboard-card p {
+        color: #666;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .dashboard-btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        background: linear-gradient(45deg, #2193b0, #6dd5ed);
+        border: none;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .dashboard-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(33, 147, 176, 0.3);
+        color: white;
+    }
+
+    .dashboard-btn i {
+        font-size: 1.2rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-section">
+    <div class="container">
+        <div class="welcome-banner">
+            <h1 class="mb-2">Bienvenue, {{ app.user.username }}!</h1>
+            <p class="mb-0 text-white-50">Gérez votre expérience de voyage depuis votre tableau de bord personnel</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Search Card -->
+            <div class="col-md-4">
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h3>Rechercher un Logement</h3>
+                    <p>Découvrez des hébergements parfaits pour votre prochaine aventure. Parcourez notre sélection de propriétés.</p>
+                    <a href="{{ path('app_voyageur_dashboard') }}" class="dashboard-btn">
+                        <i class="bi bi-compass"></i>
+                        Commencer la Recherche
+                    </a>
+                </div>
+            </div>
+
+            <!-- Reservations Card -->
+            <div class="col-md-4">
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <h3>Mes Réservations</h3>
+                    <p>Consultez et gérez vos réservations actuelles et passées. Gardez une trace de vos plans de voyage.</p>
+                    <a href="{{ path('app_voyageur_dashboard') }}" class="dashboard-btn">
+                        <i class="bi bi-list-check"></i>
+                        Voir les Réservations
+                    </a>
+                </div>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="col-md-4">
+                <div class="dashboard-card">
+                    <div class="card-icon">
+                        <i class="bi bi-person-circle"></i>
+                    </div>
+                    <h3>Mon Profil</h3>
+                    <p>Mettez à jour vos informations personnelles, gérez les paramètres de votre compte.</p>
+                    <a href="{{ path('app_profile_edit') }}" class="dashboard-btn">
+                        <i class="bi bi-gear"></i>
+                        Éditer le Profil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

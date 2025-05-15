@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reset your password{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .reset-password-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    .reset-card {
+        transition: transform 0.3s ease;
+    }
+    .reset-card:hover {
+        transform: translateY(-5px);
+    }
+    .card-header {
+        background: linear-gradient(45deg, #2193b0, #6dd5ed) !important;
+        border: none;
+    }
+    .form-control {
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: #2193b0;
+        box-shadow: 0 0 0 0.2rem rgba(33, 147, 176, 0.25);
+    }
+    .btn-primary {
+        background: linear-gradient(45deg, #2193b0, #6dd5ed);
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #1a7a94, #5bc4d9);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(33, 147, 176, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="reset-password-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg border-0 rounded-lg reset-card">
+                    <div class="card-header text-white text-center py-4">
+                        <h4 class="mb-0">Reset your password</h4>
+                        <p class="mb-0 text-white-50">Enter your email to receive a password reset link</p>
+                    </div>
+                    <div class="card-body p-4">
+                        {% for flash_error in app.flashes('reset_password_error') %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{ flash_error }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+
+                        {{ form_start(requestForm) }}
+                            <div class="mb-4">
+                                {{ form_label(requestForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    {{ form_widget(requestForm.email, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                                {{ form_errors(requestForm.email) }}
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary">
+                                    <i class="bi bi-envelope-paper me-2"></i>Send reset email
+                                </button>
+                            </div>
+                        {{ form_end(requestForm) }}
+
+                        <div class="mt-4 text-center">
+                            <a href="{{ path('app_login') }}" class="text-decoration-none">
+                                <i class="bi bi-arrow-left me-2"></i>Back to login
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

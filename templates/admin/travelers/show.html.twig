@@ -1,0 +1,111 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Détails du Voyageur{% endblock %}
+
+{% block content %}
+    <div class="pagetitle">
+        <h1>Détails du Voyageur</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('admin_travelers_index') }}">Voyageurs</a></li>
+                <li class="breadcrumb-item active">{{ traveler.firstName }} {{ traveler.lastName }}</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section profile">
+        <div class="row">
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                        <img src="{{ asset('user/assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle">
+                        <h2>{{ traveler.firstName }} {{ traveler.lastName }}</h2>
+                        <h3>Voyageur</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-body pt-3">
+                        <ul class="nav nav-tabs nav-tabs-bordered">
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Aperçu</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content pt-2">
+                            <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                                <h5 class="card-title">Détails du profil</h5>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Nom complet</div>
+                                    <div class="col-lg-9 col-md-8">{{ traveler.firstName }} {{ traveler.lastName }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Email</div>
+                                    <div class="col-lg-9 col-md-8">{{ traveler.email }}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Statut</div>
+                                    <div class="col-lg-9 col-md-8">
+                                        {% if traveler.isVerified %}
+                                            <span class="badge bg-success">Vérifié</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Non vérifié</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Date d'inscription</div>
+                                    <div class="col-lg-9 col-md-8">{{ traveler.createdAt|date('d/m/Y') }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Réservations du voyageur</h5>
+                        {% if traveler.bookings is empty %}
+                            <p>Aucune réservation enregistrée.</p>
+                        {% else %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Propriété</th>
+                                        <th>Date d'arrivée</th>
+                                        <th>Date de départ</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in traveler.bookings %}
+                                        <tr>
+                                            <td>{{ booking.property.title }}</td>
+                                            <td>{{ booking.startDate|date('d/m/Y') }}</td>
+                                            <td>{{ booking.endDate|date('d/m/Y') }}</td>
+                                            <td>
+                                                <span class="badge bg-success">Confirmée</span>
+                                            </td>
+                                            <td>
+                                                <a href="#" class="btn btn-primary btn-sm">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %} 
