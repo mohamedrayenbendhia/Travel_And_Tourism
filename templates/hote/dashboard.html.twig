@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord Hôte{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Tableau de bord Hôte</h1>
+    <div class="alert alert-success">
+        Bienvenue {{ app.user.username }} !
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Mes Propriétés</h5>
+                    <p class="card-text">Gérez vos propriétés et leurs disponibilités.</p>
+                    <a href="#" class="btn btn-primary">Gérer mes propriétés</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Réservations</h5>
+                    <p class="card-text">Consultez et gérez les réservations de vos propriétés.</p>
+                    <a href="#" class="btn btn-primary">Voir les réservations</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Mon Profil</h5>
+                    <p class="card-text">Modifiez vos informations personnelles.</p>
+                    <a href="{{ path('app_profile_edit') }}" class="btn btn-primary">Éditer mon profil</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

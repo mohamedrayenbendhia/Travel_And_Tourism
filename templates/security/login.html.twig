@@ -1,0 +1,179 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login - {% endblock %}
+
+{% block stylesheets %}
+<style>
+    .login-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    .login-card {
+        transition: transform 0.3s ease;
+    }
+    .login-card:hover {
+        transform: translateY(-5px);
+    }
+    .card-header {
+        background: linear-gradient(45deg, #2193b0, #6dd5ed) !important;
+        border: none;
+    }
+    .form-control {
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: #2193b0;
+        box-shadow: 0 0 0 0.2rem rgba(33, 147, 176, 0.25);
+    }
+    .btn-primary {
+        background: linear-gradient(45deg, #2193b0, #6dd5ed);
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #1a7a94, #5bc4d9);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(33, 147, 176, 0.3);
+    }
+    .form-check-input:checked {
+        background-color: #2193b0;
+        border-color: #2193b0;
+    }
+    .alert {
+        border-radius: 8px;
+        border: none;
+    }
+    .text-decoration-none {
+        color: #2193b0;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .text-decoration-none:hover {
+        color: #1a7a94;
+        text-decoration: underline !important;
+    }
+    .password-container {
+        position: relative;
+        flex: 1;
+    }
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        border: none;
+        background: none;
+        color: #666;
+        z-index: 10;
+    }
+    .password-field {
+        padding-right: 35px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="login-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg border-0 rounded-lg login-card">
+                    <div class="card-header text-white text-center py-4">
+                        <h4 class="mb-0">Welcome Back!</h4>
+                        <p class="mb-0 text-white-50">Please sign in to your account</p>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if error %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{ error.messageKey|trans(error.messageData, 'security') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endif %}
+
+                        {% if app.user %}
+                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}" class="text-decoration-none">Logout</a>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% else %}
+                            <form method="post" class="needs-validation" novalidate>
+                                <div class="mb-4">
+                                    <label for="inputEmail" class="form-label">Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" value="{{ last_username }}" name="_username" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="inputPassword" class="form-label">Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                        <div class="password-container">
+                                            <input type="password" name="_password" id="inputPassword" class="form-control password-field" autocomplete="current-password" required>
+                                            <button type="button" class="toggle-password" onclick="togglePassword('inputPassword')">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                                <div class="mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="_remember_me" id="remember_me">
+                                        <label class="form-check-label" for="remember_me">
+                                            Remember me
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign in
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="mt-4 text-center">
+                                <p class="mb-2">Don't have an account? <a href="{{ path('app_register') }}" class="text-decoration-none">Sign up here</a></p>
+                                <p class="mb-0">Forgot your password? <a href="{{ path('app_forgot_password_request') }}" class="text-decoration-none">Reset it here</a></p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function togglePassword(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = document.querySelector(`button[onclick="togglePassword('${inputId}')"] i`);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        }
+    </script>
+{% endblock %}

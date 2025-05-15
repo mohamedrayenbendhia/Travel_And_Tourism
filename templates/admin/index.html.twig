@@ -1,0 +1,831 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Administration - Gestion des Utilisateurs{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .admin-section {
+        background: transparent;
+        padding: 0;
+    }
+
+    .admin-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .admin-card .admin-header {
+        background: linear-gradient(135deg, #00B4DB, #0083B0);
+        margin: 0;
+        border-radius: 0;
+        padding: 2rem;
+    }
+
+    .admin-header h1 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-body {
+        padding: 2rem;
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.8rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-card h3 {
+        font-size: 1.1rem;
+        color: #555;
+        margin-bottom: 0.8rem;
+        font-weight: 500;
+    }
+
+    .stats-card .number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #00B4DB, #0083B0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+    }
+
+    .search-box {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 1.2rem 1.2rem 1.2rem 3.5rem;
+        border: 2px solid #eef2f7;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+    }
+
+    .search-box input:focus {
+        border-color: #00B4DB;
+        background: white;
+        box-shadow: 0 5px 15px rgba(0, 180, 219, 0.1);
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 1.2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 1.2rem;
+        transition: color 0.3s ease;
+    }
+
+    .search-box input:focus + i {
+        color: #00B4DB;
+    }
+
+    .user-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 0.8rem;
+    }
+
+    .user-table th {
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .user-table td {
+        padding: 1.2rem 1.5rem;
+        background: white;
+        vertical-align: middle;
+        transition: transform 0.3s ease;
+    }
+
+    .user-table tr {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .user-table tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-table tr td:first-child {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    .user-table tr td:last-child {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    .user-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #00B4DB, #0083B0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: white;
+        font-size: 1.2rem;
+        box-shadow: 0 3px 10px rgba(0, 180, 219, 0.2);
+    }
+
+    .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+
+    .role-badge {
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+        margin: 0.2rem;
+    }
+
+    .role-admin {
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+
+    .role-hote {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+    }
+
+    .role-user {
+        background: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+    }
+
+    .btn-action {
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-action.btn-primary {
+        background: linear-gradient(135deg, #00B4DB, #0083B0);
+        box-shadow: 0 3px 10px rgba(0, 180, 219, 0.2);
+    }
+
+    .btn-action.btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 180, 219, 0.3);
+    }
+
+    .btn-action.btn-danger {
+        background: linear-gradient(135deg, #ff4b4b, #ff416c);
+        box-shadow: 0 3px 10px rgba(255, 75, 75, 0.2);
+    }
+
+    .btn-action.btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 75, 75, 0.3);
+    }
+
+    .badge {
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .badge.bg-success {
+        background: linear-gradient(135deg, #28a745, #20c997) !important;
+    }
+
+    .badge.bg-warning {
+        background: linear-gradient(135deg, #ffc107, #ff9800) !important;
+        color: white;
+    }
+
+    .badge.bg-danger {
+        background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    }
+
+    .btn-action.btn-warning {
+        background: linear-gradient(135deg, #ffc107, #ff9800);
+        box-shadow: 0 3px 10px rgba(255, 193, 7, 0.2);
+    }
+
+    .btn-action.btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #00B4DB, #0083B0);
+        color: white;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        padding: 1.5rem;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .form-control, .form-select {
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        border: 2px solid #eef2f7;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #00B4DB;
+        box-shadow: 0 5px 15px rgba(0, 180, 219, 0.1);
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #64748b;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-text {
+        color: #94a3b8;
+    }
+
+    .chart-container {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        max-height: 300px;
+        position: relative;
+    }
+
+    .chart-title {
+        font-size: 1.1rem;
+        color: #333;
+        margin-bottom: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .chart-wrapper {
+        position: relative;
+        height: 220px;
+        width: 100%;
+    }
+
+    .btn-export-pdf {
+        background: white;
+        color: #2193b0;
+        padding: 0.8rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-export-pdf:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        color: #0083B0;
+    }
+
+    .btn-export-pdf i {
+        font-size: 1.2rem;
+    }
+
+    .export-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        background: rgba(33, 147, 176, 0.1);
+        border-radius: 6px;
+        margin-right: 8px;
+    }
+
+    /* Role checkbox styles */
+    .form-check {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-check:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .form-check-input {
+        width: 1.2em;
+        height: 1.2em;
+        margin-top: 0.25em;
+    }
+
+    .form-check-label {
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+
+    /* Role-specific checkbox styles */
+    .form-check.admin-role .form-check-input:checked {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .form-check.hote-role .form-check-input:checked {
+        background-color: #ffc107;
+        border-color: #ffc107;
+    }
+
+    .form-check.voyageur-role .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .dropdown-item-form {
+        margin: 0;
+        padding: 0;
+    }
+
+    .dropdown-item-form .dropdown-item {
+        width: 100%;
+        text-align: left;
+        padding: .5rem 1rem;
+        border: none;
+        background: none;
+        cursor: pointer;
+    }
+
+    .dropdown-item-form .dropdown-item:disabled {
+        background-color: #e9ecef;
+        cursor: default;
+        font-weight: bold;
+    }
+
+    .dropdown-item-form .dropdown-item:hover:not(:disabled) {
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="admin-section">
+    <div class="admin-card">
+        <div class="admin-header text-white d-flex justify-content-between align-items-center">
+            <h1 class="mb-0">Gestion des Utilisateurs</h1>
+            <a href="{{ path('app_admin_users_export_pdf') }}" class="btn btn-export-pdf">
+                <span class="export-icon">
+                    <i class="bi bi-file-pdf"></i>
+                </span>
+                Exporter la liste en PDF
+            </a>
+        </div>
+        <div class="admin-body">
+            <!-- Statistics Row -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <h3>Total Utilisateurs</h3>
+                        <div class="number">{{ users|length }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <h3>Hôtes</h3>
+                        <div class="number">{{ users|reduce((count, user) => count + ('ROLE_HOTE' in user.roles ? 1 : 0), 0) }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <h3>Voyageurs</h3>
+                        <div class="number">{{ users|reduce((count, user) => count + ('ROLE_USER' in user.roles and 'ROLE_ADMIN' not in user.roles and 'ROLE_HOTE' not in user.roles ? 1 : 0), 0) }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <h3>Administrateurs</h3>
+                        <div class="number">{{ users|reduce((count, user) => count + ('ROLE_ADMIN' in user.roles ? 1 : 0), 0) }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Distribution des Rôles</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="rolesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <h3 class="chart-title">État des Comptes</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="accountStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Box -->
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="userSearch" class="form-control" placeholder="Rechercher un utilisateur...">
+            </div>
+
+            <!-- Users Table -->
+            <div class="table-responsive">
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>Utilisateur</th>
+                            <th>Email</th>
+                            <th>Rôle</th>
+                            <th>Statut</th>
+                            <th>État du compte</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-3">
+                                        {% if user.profileImage %}
+                                            <img src="{{ asset('uploads/profile_images/' ~ user.profileImage) }}" alt="{{ user.username }}">
+                                        {% else %}
+                                            {{ user.username|slice(0, 1)|upper }}
+                                        {% endif %}
+                                    </div>
+                                    {{ user.username }}
+                                </div>
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td class="role-display-cell-{{ user.id }}">
+                                {% for role in user.roles %}
+                                    {% if role == 'ROLE_ADMIN' %}
+                                        <span class="role-badge role-admin">Admin</span>
+                                    {% elseif role == 'ROLE_HOTE' %}
+                                        <span class="role-badge role-hote">Hôte</span>
+                                    {% elseif role == 'ROLE_USER' %}
+                                        <span class="role-badge role-user">Voyageur</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if user.isVerified %}
+                                    <span class="badge bg-success">Vérifié</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Non vérifié</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.isBanned %}
+                                    <span class="badge bg-danger">Banni</span>
+                                {% else %}
+                                    <span class="badge bg-success">Actif</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <div class="dropdown">
+                                        <button class="btn btn-action btn-primary dropdown-toggle" type="button" id="dropdownRoleButton{{ user.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-user-tag"></i> Rôles
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownRoleButton{{ user.id }}">
+                                            <li>
+                                                <form id="roleForm{{ user.id }}" action="{{ path('app_admin_user_roles', {'id': user.id}) }}" method="post" class="dropdown-item-form">
+                                                    <input type="hidden" name="_token" value="{{ token }}">
+                                                    <button type="submit" class="dropdown-item" name="roles[]" value="ROLE_USER" {% if 'ROLE_USER' in user.roles and 'ROLE_ADMIN' not in user.roles and 'ROLE_HOTE' not in user.roles %}disabled{% endif %}>
+                                                        Voyageur
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form id="roleFormHote{{ user.id }}" action="{{ path('app_admin_user_roles', {'id': user.id}) }}" method="post" class="dropdown-item-form">
+                                                    <input type="hidden" name="_token" value="{{ token }}">
+                                                    <button type="submit" class="dropdown-item" name="roles[]" value="ROLE_HOTE" {% if 'ROLE_HOTE' in user.roles %}disabled{% endif %}>
+                                                        Hôte
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form id="roleFormAdmin{{ user.id }}" action="{{ path('app_admin_user_roles', {'id': user.id}) }}" method="post" class="dropdown-item-form">
+                                                    <input type="hidden" name="_token" value="{{ token }}">
+                                                    <button type="submit" class="dropdown-item" name="roles[]" value="ROLE_ADMIN" {% if 'ROLE_ADMIN' in user.roles %}disabled{% endif %}>
+                                                        Administrateur
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    
+                                    {% if not user.isBanned %}
+                                        <button type="button" class="btn btn-action btn-danger" data-bs-toggle="modal" data-bs-target="#banUserModal{{ user.id }}">
+                                            <i class="fas fa-ban"></i> Bannir
+                                        </button>
+                                    {% else %}
+                                        <form action="{{ path('app_admin_user_unban', {'id': user.id}) }}" method="post" class="d-inline">
+                                            <input type="hidden" name="_token" value="{{ token }}">
+                                            <button type="submit" class="btn btn-action btn-warning">
+                                                <i class="fas fa-undo"></i> Débannir
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                    <button class="btn btn-sm btn-danger btn-action"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteUserModal{{ user.id }}">
+                                        <i class="bi bi-trash me-1"></i>Supprimer
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Ban User Modal -->
+                        <div class="modal fade" id="banUserModal{{ user.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Bannir l'utilisateur</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ path('app_admin_user_ban', {'id': user.id}) }}" method="POST">
+                                            <input type="hidden" name="_token" value="{{ token }}">
+                                            <div class="mb-3">
+                                                <label class="form-label">Raison du bannissement</label>
+                                                <textarea class="form-control" name="banReason" rows="3" required></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-warning">
+                                                <i class="bi bi-slash-circle me-2"></i>Confirmer le bannissement
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delete User Modal -->
+                        <div class="modal fade" id="deleteUserModal{{ user.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Confirmer la suppression</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Êtes-vous sûr de vouloir supprimer l'utilisateur <strong>{{ user.username }}</strong> ?</p>
+                                        <p class="text-danger">Cette action est irréversible.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                        <form action="{{ path('app_admin_user_delete', {'id': user.id}) }}" method="POST" class="d-inline">
+                                            <input type="hidden" name="_token" value="{{ token }}">
+                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                                                <i class="bi bi-trash me-2"></i>Supprimer
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality
+    const searchInput = document.getElementById('userSearch');
+    const userTable = document.querySelector('.user-table tbody');
+    const rows = userTable.getElementsByTagName('tr');
+
+    searchInput.addEventListener('keyup', function(e) {
+        const searchText = e.target.value.toLowerCase();
+
+        Array.from(rows).forEach(row => {
+            const username = row.querySelector('td:first-child').textContent.toLowerCase();
+            const email = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            
+            if (username.includes(searchText) || email.includes(searchText)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Common chart options
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    boxWidth: 12,
+                    padding: 15,
+                    font: {
+                        size: 11
+                    }
+                }
+            }
+        },
+        layout: {
+            padding: {
+                top: 5,
+                bottom: 5
+            }
+        }
+    };
+
+    // Roles Chart
+    const rolesCtx = document.getElementById('rolesChart').getContext('2d');
+    new Chart(rolesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Voyageurs', 'Hôtes', 'Administrateurs'],
+            datasets: [{
+                data: [
+                    {{ users|reduce((count, user) => count + ('ROLE_USER' in user.roles and 'ROLE_ADMIN' not in user.roles and 'ROLE_HOTE' not in user.roles ? 1 : 0), 0) }},
+                    {{ users|reduce((count, user) => count + ('ROLE_HOTE' in user.roles ? 1 : 0), 0) }},
+                    {{ users|reduce((count, user) => count + ('ROLE_ADMIN' in user.roles ? 1 : 0), 0) }}
+                ],
+                backgroundColor: [
+                    'rgba(13, 110, 253, 0.8)',
+                    'rgba(255, 193, 7, 0.8)',
+                    'rgba(220, 53, 69, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(13, 110, 253, 1)',
+                    'rgba(255, 193, 7, 1)',
+                    'rgba(220, 53, 69, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: chartOptions
+    });
+
+    // Account Status Chart
+    const statusCtx = document.getElementById('accountStatusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Vérifiés', 'Non Vérifiés', 'Bannis'],
+            datasets: [{
+                data: [
+                    {{ users|filter(user => user.isVerified)|length }},
+                    {{ users|filter(user => not user.isVerified)|length }},
+                    {{ users|filter(user => user.isBanned)|length }}
+                ],
+                backgroundColor: [
+                    'rgba(40, 167, 69, 0.8)',
+                    'rgba(255, 193, 7, 0.8)',
+                    'rgba(220, 53, 69, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(40, 167, 69, 1)',
+                    'rgba(255, 193, 7, 1)',
+                    'rgba(220, 53, 69, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: chartOptions
+    });
+
+    // Handle role forms submission
+    document.querySelectorAll('.dropdown-item-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const userId = this.id.match(/\d+/)[0];
+            const roleValue = this.querySelector('button[type="submit"]').value;
+            const roleDisplayCell = document.querySelector(`.role-display-cell-${userId}`);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the role badges
+                    let newBadge = '';
+                    if (roleValue === 'ROLE_ADMIN') {
+                        newBadge = '<span class="role-badge role-admin">Admin</span>';
+                    } else if (roleValue === 'ROLE_HOTE') {
+                        newBadge = '<span class="role-badge role-hote">Hôte</span>';
+                    } else if (roleValue === 'ROLE_USER') {
+                        newBadge = '<span class="role-badge role-user">Voyageur</span>';
+                    }
+                    
+                    roleDisplayCell.innerHTML = newBadge;
+                    
+                    // Update the dropdown buttons state
+                    const dropdownForms = document.querySelectorAll(`form[id$="${userId}"]`);
+                    dropdownForms.forEach(form => {
+                        const button = form.querySelector('button');
+                        if (button.value === roleValue) {
+                            button.disabled = true;
+                        } else {
+                            button.disabled = false;
+                        }
+                    });
+
+                    // Update stats
+                    updateRoleStats();
+                } else {
+                    alert(data.message || 'Une erreur est survenue');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Une erreur est survenue lors de la modification des rôles');
+            });
+        });
+    });
+
+    function updateRoleStats() {
+        // Count roles
+        const adminCount = document.querySelectorAll('.role-badge.role-admin').length;
+        const hoteCount = document.querySelectorAll('.role-badge.role-hote').length;
+        const voyageurCount = document.querySelectorAll('.role-badge.role-user').length;
+
+        // Update stats cards
+        document.querySelector('.stats-card:nth-child(2) .number').textContent = hoteCount;
+        document.querySelector('.stats-card:nth-child(3) .number').textContent = voyageurCount;
+        document.querySelector('.stats-card:nth-child(4) .number').textContent = adminCount;
+
+        // Update charts if they exist
+        if (window.rolesChart) {
+            window.rolesChart.data.datasets[0].data = [voyageurCount, hoteCount, adminCount];
+            window.rolesChart.update();
+        }
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}
